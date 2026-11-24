@@ -1683,23 +1683,37 @@ with check (true);</div>
 
   function normalizeSupabaseUrl(rawUrl) {
     let clean = (rawUrl || '').trim();
-    if (!clean) return '';
+    if (!clean || clean.includes('xxxx.supabase.co')) return '';
     if (!/^https?:\/\//i.test(clean)) clean = 'https://' + clean;
     clean = clean.replace(/\/rest\/v1.*$/i, '').replace(/\/+$/, '');
     return clean;
   }
 
-  function buildSupabaseHeaders(key, extra = {}) {
+  function buildSupabaseHeaders(key, extra = {}, useBearer = true) {
     const cleanKey = (key || '').trim();
     const headers = {
       'apikey': cleanKey,
       ...extra
     };
-    // Новые ключи sb_publishable_... передаются только через apikey; JWT (eyJ...) — еще и в Bearer
-    if (cleanKey.startsWith('eyJ')) {
+    if (useBearer && cleanKey) {
       headers['Authorization'] = `Bearer ${cleanKey}`;
     }
     return headers;
+  }
+
+  async function supabaseFetchWithFallback(url, key, options = {}) {
+    const extraHeaders = options.headers || {};
+    let res = await fetch(url, {
+      ...options,
+      headers: buildSupabaseHeaders(key, extraHeaders, true)
+    });
+    if (res.status === 401 && !key.startsWith('eyJ')) {
+      res = await fetch(url, {
+        ...options,
+        headers: buildSupabaseHeaders(key, extraHeaders, false)
+      });
+    }
+    return res;
   }
 
   function loadSupabaseConfig() {
@@ -1787,11 +1801,12 @@ with check (true);</div>
     setCloudBadge('syncing', 'Синхр...');
     try {
       const endpoint = `${cfg.url}/rest/v1/tracker_state?id=eq.${encodeURIComponent(cfg.profileId)}&select=data,updated_at`;
-      const res = await fetch(endpoint, {
-        headers: buildSupabaseHeaders(cfg.key)
-      });
+      const res = await supabaseFetchWithFallback(endpoint, cfg.key);
 
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        throw new Error(`HTTP ${res.status} ${errText}`);
+      }
       const rows = await res.json();
       isCloudConnected = true;
 
@@ -1825,8 +1840,47 @@ with check (true);</div>
       return true;
     } catch (err) {
       isCloudConnected = false;
-      setCloudBadge('error', 'Ошибка БД');
-      if (!silent) showToast('Ошибка подключения: проверь URL, Key и SQL');
+      const msg = String(err.message || '');
+      const shortErr = msg.includes('401') ? 'Ошибка 401 (Ключ/RLS)' : (msg.includes('404') ? 'Ошибка 404 (Нет таблицы)' : 'Ошибка БД');
+      setCloudBadge('error', shortErr);
+      if (!silent) showToast(shortErr + ' — проверь вкладку Бэкап');
+      return false;
+    }
+  }
+
+  async function pushToSupabase(silent = true) {
+    const cfg = loadSupabaseConfig();
+    if (!cfg.url || !cfg.key) return false;
+
+    setCloudBadge('syncing', 'Сохранение...');
+    try {
+      const endpoint = `${cfg.url}/rest/v1/tracker_state?on_conflict=id`;
+      const res = await supabaseFetchWithFallback(endpoint, cfg.key, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates,return=minimal'
+        },
+        body: JSON.stringify({
+          id: cfg.profileId,
+          data: state,
+          updated_at: new Date().toISOString()
+        })
+      });
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        throw new Error(`HTTP ${res.status} ${errText}`);
+      }
+      isCloudConnected = true;
+      setCloudBadge('online', 'Supabase • Онлайн');
+      if (!silent) showToast('Сохранено в облако Supabase');
+      return true;
+    } catch (err) {
+      const msg = String(err.message || '');
+      const shortErr = msg.includes('401') ? 'Ошибка 401 (Ключ/RLS)' : (msg.includes('404') ? 'Ошибка 404 (Нет таблицы)' : 'Ошибка БД');
+      setCloudBadge('error', shortErr);
+      if (!silent) showToast('Не удалось сохранить: ' + shortErr);
       return false;
     }
   }
