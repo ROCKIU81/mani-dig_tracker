@@ -1,0 +1,2523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>mani.digital — План до 31 декабря</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0B0B0C;
+      --bg-card: #161618;
+      --bg-elevated: #1E1E21;
+      --border-color: #262629;
+      --accent-gold: #F5B82E;
+      --accent-gold-dim: rgba(245, 184, 46, 0.14);
+      --accent-green: #22C55E;
+      --accent-green-dim: rgba(34, 197, 94, 0.14);
+      --accent-red: #EF4444;
+      --accent-red-dim: rgba(239, 68, 68, 0.14);
+      --accent-blue: #3B82F6;
+      --accent-blue-dim: rgba(59, 130, 246, 0.14);
+      --text-primary: #F4F4F5;
+      --text-secondary: #A1A1AA;
+      --text-muted: #71717A;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --nav-height: 72px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      background-color: #050506;
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Основной мобильный контейнер */
+    .app-shell {
+      max-width: 480px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background-color: var(--bg-primary);
+      border-left: 1px solid #18181B;
+      border-right: 1px solid #18181B;
+      padding-bottom: calc(var(--nav-height) + 28px);
+      position: relative;
+    }
+
+    /* Шапка */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(11, 11, 12, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .brand-title span {
+      color: var(--accent-gold);
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+
+    .countdown-pill {
+      background: var(--accent-gold-dim);
+      border: 1px solid rgba(229, 169, 59, 0.35);
+      color: var(--accent-gold);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    /* Вкладки */
+    .tab-content {
+      display: none;
+      padding: 14px 14px 20px;
+      animation: fadeIn 0.18s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Карточки */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .badge-gold {
+      background: var(--accent-gold-dim);
+      border: 1px solid rgba(245, 184, 46, 0.35);
+      color: var(--accent-gold);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .badge-green {
+      background: var(--accent-green-dim);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: var(--accent-green);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .stats-row strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .progress-wrap {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-elevated);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #D99B26, #F5B82E);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .progress-fill.green {
+      background: linear-gradient(90deg, #16A34A, #22C55E);
+    }
+
+    .btn {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.1s ease, border-color 0.15s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-gold {
+      background: var(--accent-gold);
+      border-color: var(--accent-gold);
+      color: #0B0B0C;
+      font-weight: 700;
+    }
+
+    .btn-gold-soft {
+      background: var(--accent-gold-dim);
+      border-color: rgba(245, 184, 46, 0.35);
+      color: var(--accent-gold);
+    }
+
+    .btn-danger-soft {
+      background: var(--accent-red-dim);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: var(--accent-red);
+    }
+
+    .btn-sm {
+      min-height: 34px;
+      padding: 0 10px;
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .sub-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .sub-controls .btn {
+      flex: 1;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .task-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-field {
+      width: 100%;
+      min-height: 42px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-gold);
+    }
+
+    /* Шапка и глобальный прогресс долга */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(11, 11, 12, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 14px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .brand-title span {
+      color: var(--accent-gold);
+    }
+
+    .brand-sub {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+
+    .countdown-pill {
+      background: var(--accent-gold-dim);
+      border: 1px solid rgba(245, 184, 46, 0.35);
+      color: var(--accent-gold);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .header-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sync-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .sync-pill.online {
+      background: var(--accent-green-dim);
+      border-color: rgba(34, 197, 94, 0.35);
+      color: var(--accent-green);
+    }
+
+    .sync-pill.syncing {
+      background: var(--accent-blue-dim);
+      border-color: rgba(59, 130, 246, 0.35);
+      color: var(--accent-blue);
+    }
+
+    .sync-pill.error {
+      background: var(--accent-red-dim);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: var(--accent-red);
+    }
+
+    .sql-code-box {
+      background: #0D0D0F;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.45;
+      color: #E4E4E7;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin: 8px 0;
+    }
+
+    .header-debt-strip {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(38, 38, 41, 0.7);
+    }
+
+    .header-debt-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .header-debt-meta strong {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* Кнопки воронки холодки */
+    .funnel-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .funnel-stage-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .funnel-stage-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .funnel-stage-lbl {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .funnel-stage-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .funnel-stage-val.gold { color: var(--accent-gold); }
+    .funnel-stage-val.blue { color: var(--accent-blue); }
+    .funnel-stage-val.green { color: var(--accent-green); }
+
+    .stepper-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 6px;
+    }
+
+    .step-btn {
+      min-height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .step-btn:active {
+      transform: scale(0.96);
+    }
+
+    .step-btn.plus {
+      background: var(--accent-gold-dim);
+      border-color: rgba(245, 184, 46, 0.35);
+      color: var(--accent-gold);
+    }
+
+    .step-btn.plus-green {
+      background: var(--accent-green-dim);
+      border-color: rgba(34, 197, 94, 0.35);
+      color: var(--accent-green);
+    }
+
+    .conversion-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 8px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .conv-item-val {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--accent-gold);
+    }
+
+    .conv-item-lbl {
+      font-size: 10.5px;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+    /* Дорожная карта по неделям до 31 декабря */
+    .stage-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .stage-card.current-week {
+      border-color: rgba(245, 184, 46, 0.45);
+    }
+
+    .stage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .stage-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-gold);
+    }
+
+    .stage-schedule-hint {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+
+    .stage-date {
+      font-size: 11px;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    .checkpoint-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 7px 0;
+      border-top: 1px solid rgba(38, 38, 41, 0.55);
+    }
+
+    .checkpoint-row:first-of-type {
+      border-top: none;
+    }
+
+    .checkpoint-text-wrap {
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .checkpoint-row.done .checkpoint-label {
+      text-decoration: line-through;
+      color: var(--text-secondary);
+    }
+
+    .checkpoint-day-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      background: var(--accent-gold-dim);
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-right: 5px;
+    }
+
+    .mini-icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .mini-icon-btn:active {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .stage-add-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .stage-add-input {
+      flex: 1;
+      min-height: 36px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 12.5px;
+      outline: none;
+    }
+
+    .stage-add-input:focus {
+      border-color: var(--accent-gold);
+    }
+
+    /* Текстовая область для JSON синхронизации */
+    .json-textarea {
+      width: 100%;
+      min-height: 126px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11.5px;
+      line-height: 1.4;
+      resize: vertical;
+      outline: none;
+      margin: 8px 0;
+    }
+
+    .json-textarea:focus {
+      border-color: var(--accent-gold);
+    }
+
+    .tag-selector {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .tag-chip {
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tag-chip.active {
+      border-color: var(--accent-gold);
+      background: var(--accent-gold-dim);
+      color: var(--accent-gold);
+    }
+
+    /* Список задач */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      transition: opacity 0.2s ease, border-color 0.2s ease;
+    }
+
+    .task-item.done {
+      opacity: 0.62;
+      border-color: rgba(34, 197, 94, 0.25);
+    }
+
+    .checkbox-btn {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 7px;
+      border: 2px solid #3F3F46;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-top: 1px;
+      color: #0B0B0C;
+      transition: all 0.15s ease;
+    }
+
+    .task-item.done .checkbox-btn {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+
+    .task-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-text {
+      font-size: 14px;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .task-item.done .task-text {
+      text-decoration: line-through;
+      color: var(--text-secondary);
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .priority-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .prio-Срочно { background: var(--accent-red-dim); color: var(--accent-red); }
+    .prio-Продажи { background: var(--accent-gold-dim); color: var(--accent-gold); }
+    .prio-Код { background: var(--accent-blue-dim); color: var(--accent-blue); }
+    .prio-База { background: var(--accent-green-dim); color: var(--accent-green); }
+
+    .delete-icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .delete-icon-btn:active {
+      background: var(--accent-red-dim);
+      color: var(--accent-red);
+    }
+
+    /* Вкладка План и Долг */
+    .split-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--bg-primary);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      margin-bottom: 12px;
+    }
+
+    .split-option {
+      min-height: 38px;
+      border: none;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .split-option.active {
+      background: var(--accent-gold);
+      color: #0B0B0C;
+      font-weight: 700;
+    }
+
+    .preset-deals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .deal-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 54px;
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .deal-btn:active {
+      border-color: var(--accent-gold);
+      transform: scale(0.98);
+    }
+
+    .deal-btn-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .deal-btn-price {
+      font-size: 12px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      gap: 8px;
+    }
+
+    .history-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .history-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .history-sum {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent-green);
+      white-space: nowrap;
+    }
+
+    /* Дорожная карта */
+    .stage-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .stage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .stage-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-gold);
+    }
+
+    .stage-date {
+      font-size: 11px;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .checkpoint-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 6px 0;
+      cursor: pointer;
+    }
+
+    .checkpoint-row.done span {
+      text-decoration: line-through;
+      color: var(--text-secondary);
+    }
+
+    /* Вкладка Шпаргалка */
+    .accordion-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .accordion-chevron {
+      color: var(--accent-gold);
+      transition: transform 0.2s ease;
+      font-size: 14px;
+    }
+
+    .accordion-item.open .accordion-chevron {
+      transform: rotate(180deg);
+    }
+
+    .accordion-body {
+      display: none;
+      padding: 0 16px 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .accordion-item.open .accordion-body {
+      display: block;
+    }
+
+    .script-box {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      white-space: pre-line;
+      margin: 12px 0;
+    }
+
+    .script-note {
+      font-size: 12px;
+      color: var(--accent-gold);
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    /* Служебные кнопки внизу */
+    .footer-tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* Нижняя навигация на 4 вкладки */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      height: var(--nav-height);
+      background: rgba(22, 22, 24, 0.96);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border-color);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      z-index: 40;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .nav-btn.active {
+      color: var(--accent-gold);
+    }
+
+    .nav-btn.active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 36px;
+      height: 3px;
+      background: var(--accent-gold);
+      border-radius: 0 0 4px 4px;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .nav-label {
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+
+    /* Уведомление (Toast) и модалка подтверждения */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--nav-height) + 14px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #27272A;
+      border: 1px solid var(--accent-gold);
+      color: var(--text-primary);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      z-index: 60;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 70;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- Верхняя панель -->
+  <header class="app-header">
+    <div class="header-top">
+      <div class="brand-block">
+        <div class="brand-title"><span>mani.digital</span> • До 31 декабря</div>
+        <div class="brand-sub">200 холодных клиентов • Синхронизация</div>
+      </div>
+      <div class="header-pills">
+        <button type="button" class="sync-pill" id="cloudStatusPill" onclick="goToSyncTab()">Локально</button>
+        <div class="countdown-pill" id="daysLeftBadge">38 дн. до НГ</div>
+      </div>
+    </div>
+    <div class="header-debt-strip">
+      <div class="header-debt-meta">
+        <span>Долг 50 000 ₽: <strong id="headerDebtPaid">0 ₽ (0%)</strong></span>
+        <span>Остаток: <span id="headerDebtLeft" style="color: var(--accent-gold); font-weight: 700;">50 000 ₽</span></span>
+      </div>
+      <div class="progress-wrap" style="height: 6px; margin: 0;">
+        <div class="progress-fill green" id="headerDebtBar" style="width: 0%;"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== ВКЛАДКА 1: ВОРОНКА 200 ==================== -->
+  <main id="tab-today" class="tab-content active">
+    <!-- Трекер базы 200 холодных клиентов -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">База 200 холодных клиентов</div>
+        <span class="badge-gold" id="dailyNormBadge">Сегодня: 0 / 15</span>
+      </div>
+
+      <div class="stats-row">
+        <span>Прозвонено: <strong id="baseDoneText">0 / 200</strong></span>
+        <span>Норма: <strong id="recommendedDailyText">15 / день</strong></span>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-fill" id="baseProgressBar" style="width: 0%;"></div>
+      </div>
+
+      <div class="funnel-grid-4">
+        <div class="funnel-stage-card">
+          <div class="funnel-stage-top">
+            <span class="funnel-stage-lbl">1. Прозвонено</span>
+            <span class="funnel-stage-val" id="metricCalls">0</span>
+          </div>
+          <div class="stepper-row">
+            <button type="button" class="step-btn" onclick="changeMetric('calls', -1)">−</button>
+            <button type="button" class="step-btn plus" onclick="changeMetric('calls', 1)">+1 Звонок</button>
+          </div>
+        </div>
+
+        <div class="funnel-stage-card">
+          <div class="funnel-stage-top">
+            <span class="funnel-stage-lbl">2. Демо в TG/WA</span>
+            <span class="funnel-stage-val gold" id="metricDemos">0</span>
+          </div>
+          <div class="stepper-row">
+            <button type="button" class="step-btn" onclick="changeMetric('demos', -1)">−</button>
+            <button type="button" class="step-btn plus" onclick="changeMetric('demos', 1)">+1 Демо</button>
+          </div>
+        </div>
+
+        <div class="funnel-stage-card">
+          <div class="funnel-stage-top">
+            <span class="funnel-stage-lbl">3. Созвон / Лид</span>
+            <span class="funnel-stage-val blue" id="metricLeads">0</span>
+          </div>
+          <div class="stepper-row">
+            <button type="button" class="step-btn" onclick="changeMetric('leads', -1)">−</button>
+            <button type="button" class="step-btn plus" onclick="changeMetric('leads', 1)">+1 Лид</button>
+          </div>
+        </div>
+
+        <div class="funnel-stage-card">
+          <div class="funnel-stage-top">
+            <span class="funnel-stage-lbl">4. Оплата / Заказ</span>
+            <span class="funnel-stage-val green" id="metricClosed">0</span>
+          </div>
+          <div class="stepper-row">
+            <button type="button" class="step-btn" onclick="changeMetric('closed', -1)">−</button>
+            <button type="button" class="step-btn plus-green" onclick="changeMetric('closed', 1)">+1 Заказ</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="conversion-strip">
+        <div>
+          <div class="conv-item-val" id="convCallToDemo">0%</div>
+          <div class="conv-item-lbl">Звонок → Демо</div>
+        </div>
+        <div>
+          <div class="conv-item-val" id="convDemoToLead">0%</div>
+          <div class="conv-item-lbl">Демо → Лид</div>
+        </div>
+        <div>
+          <div class="conv-item-val" id="convTotalClose">0%</div>
+          <div class="conv-item-lbl">Общая в заказ</div>
+        </div>
+      </div>
+
+      <div class="sub-controls">
+        <button type="button" class="btn btn-sm" onclick="resetDailyCounter()">Новый день (сброс 0/15)</button>
+      </div>
+    </section>
+
+    <!-- Оперативные задачи на сегодня -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Фокус на сегодня</div>
+        <span class="badge-green" id="tasksCounterBadge">0 / 0</span>
+      </div>
+
+      <form class="task-form" onsubmit="handleAddTask(event)">
+        <div class="input-row">
+          <input type="text" id="newTaskInput" class="input-field" placeholder="Добавить быструю задачу..." required />
+          <button type="submit" class="btn btn-gold" style="min-width: 52px; padding: 0 14px;">+</button>
+        </div>
+        <div class="tag-selector" id="tagSelector">
+          <button type="button" class="tag-chip active" data-tag="Срочно" onclick="selectTag(this)">Срочно</button>
+          <button type="button" class="tag-chip" data-tag="Продажи" onclick="selectTag(this)">Продажи</button>
+          <button type="button" class="tag-chip" data-tag="Код" onclick="selectTag(this)">Код</button>
+          <button type="button" class="tag-chip" data-tag="База" onclick="selectTag(this)">База</button>
+        </div>
+      </form>
+
+      <div class="task-list" id="taskListContainer"></div>
+    </section>
+  </main>
+
+  <!-- ==================== ВКЛАДКА 2: ПЛАН ДО 31 ДЕК ==================== -->
+  <main id="tab-plan" class="tab-content">
+    <!-- Трекер закрытия долга 50 000 ₽ -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Финансы и долг 50 000 ₽</div>
+        <span class="badge-green" id="debtPercentBadge">0%</span>
+      </div>
+
+      <div class="stats-row">
+        <span>Накоплено: <strong id="debtPaidText">0 ₽ / 50 000 ₽</strong></span>
+        <span>Осталось: <strong id="debtLeftText" style="color: var(--accent-gold);">50 000 ₽</strong></span>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-fill green" id="debtProgressBar" style="width: 0%;"></div>
+      </div>
+
+      <div style="font-size: 12px; color: var(--text-secondary); margin: 12px 0 6px;">Твоя доля с IT-заказа (для КЦ ставь 100%):</div>
+      <div class="split-toggle">
+        <button type="button" class="split-option active" id="split100Btn" onclick="setDealShare(1)">100% мои (сам / КЦ)</button>
+        <button type="button" class="split-option" id="split50Btn" onclick="setDealShare(0.5)">50/50 с партнёром</button>
+      </div>
+
+      <div class="preset-deals">
+        <button type="button" class="deal-btn" onclick="addDeal('Бот Старт', 3000)">
+          <span class="deal-btn-title">Бот Старт</span>
+          <span class="deal-btn-price" data-base="3000">3 000 ₽</span>
+        </button>
+        <button type="button" class="deal-btn" onclick="addDeal('Бот Записи', 5000)">
+          <span class="deal-btn-title">Бот Записи</span>
+          <span class="deal-btn-price" data-base="5000">5 000 ₽</span>
+        </button>
+        <button type="button" class="deal-btn" onclick="addDeal('Лендинг', 8000)">
+          <span class="deal-btn-title">Лендинг</span>
+          <span class="deal-btn-price" data-base="8000">8 000 ₽</span>
+        </button>
+        <button type="button" class="deal-btn" onclick="addDeal('Комплект Бот + Сайт', 11000)">
+          <span class="deal-btn-title">Бот + Сайт</span>
+          <span class="deal-btn-price" data-base="11000">11 000 ₽</span>
+        </button>
+        <button type="button" class="deal-btn" onclick="addDeal('Парсер', 6000)">
+          <span class="deal-btn-title">Парсер</span>
+          <span class="deal-btn-price" data-base="6000">6 000 ₽</span>
+        </button>
+        <div style="display: flex; gap: 6px; align-items: stretch;">
+          <input type="number" id="customDealInput" class="input-field" placeholder="КЦ / Своя ₽" min="100" step="100" style="min-height: 54px; padding: 8px 10px;" />
+          <button type="button" class="btn btn-gold" onclick="addCustomDeal()" style="min-height: 54px; padding: 0 12px;">+</button>
+        </div>
+      </div>
+
+      <div id="dealsHistoryWrap">
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px;">История поступлений:</div>
+        <div class="history-list" id="dealsHistoryList"></div>
+      </div>
+    </section>
+
+    <!-- Полный план по неделям до 31 декабря -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Календарный план до 31 дек</div>
+        <span class="badge-gold" id="roadmapProgressBadge">0 / 0</span>
+      </div>
+      <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+        Отмечай шаги, редактируй текст (✎) или добавляй задачи внутрь любой недели. При обновлении плана через JSON выполненные галочки сохраняются.
+      </div>
+      <div id="roadmapContainer"></div>
+    </section>
+  </main>
+
+  <!-- ==================== ВКЛАДКА 3: СКРИПТЫ ==================== -->
+  <main id="tab-cheatsheet" class="tab-content">
+    <!-- Скрипт звонка -->
+    <div class="accordion-item open">
+      <button type="button" class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span>1. Скрипт холодного звонка (2ГИС)</span>
+        <span class="accordion-chevron">▼</span>
+      </button>
+      <div class="accordion-body">
+        <div class="script-note">Правило: не называй цену в звонке, переводи в TG/WA.</div>
+        <div class="script-box" id="scriptCallText">Добрый день, [Имя]! Меня зовут Никита, я разработчик из Новосибирска. Смотрел вашу карточку в 2ГИС — вижу классные отзывы и услуги, но заметил, что у вас нет быстрой онлайн-записи через мессенджер, а клиентам приходится звонить или ждать ответа администратора.
+
+Мы сейчас для компаний в Новосибирске собираем связку: легкий сайт-визитка + Telegram-бот для записи с напоминаниями, чтобы клиенты записывались сами даже ночью и не забывали про визит.
+
+Подскажите, вам сейчас актуально разгрузить администратора и получать больше записей, или у вас и так полная загрузка?
+
+--- Если спрашивают «Сколько стоит?» ---
+Зависит от задачи — нужен только бот записи, только сайт или связка под ключ. Чтобы не гадать на слух, давайте я скину вам в WhatsApp или Telegram живое видео-демо и короткий прайс по вариантам. На этот номер удобно прислать?</div>
+        <button type="button" class="btn btn-gold" style="width: 100%;" onclick="copyTextById('scriptCallText', 'Скрипт звонка скопирован')">Скопировать текст</button>
+      </div>
+    </div>
+
+    <!-- Шаблон с прайсом в TG/WA -->
+    <div class="accordion-item">
+      <button type="button" class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span>2. Шаблон с прайсом в TG / WA</span>
+        <span class="accordion-chevron">▼</span>
+      </button>
+      <div class="accordion-body">
+        <div class="script-note">Отправляй сразу после звонка вместе с демо-видео.</div>
+        <div class="script-box" id="scriptPriceText">[Имя], добрый день! Это Никита (mani.digital), мы только что созвонились по поводу онлайн-записи и автоматизации.
+
+Как и обещал, отправляю варианты под ключ (запуск за 3–4 дня, без ежемесячных абонентских плат):
+
+1. Бот-визитка Старт — 3 000 ₽ (прайс, адрес, отзывы, кнопка быстрой заявки в личку).
+2. Бот онлайн-записи — 5 000 ₽ (выбор услуги, даты, времени + напоминания клиенту за день до визита).
+3. Продающий лендинг — 8 000 ₽ (услуги, цены, галерея, адаптив под телефон, заявки в Telegram).
+4. Комплект «Вместе» (Сайт + Бот записи) — 11 000 ₽ вместо 13 000 ₽.
+
+Также делаем парсеры баз и цен конкурентов в Excel/Telegram: 3 000 ₽ (разовый), 6 000 ₽ (по расписанию), 12 000 ₽ (сложные сайты).
+
+Предоплата 50% после согласования структуры, остаток — после проверки и запуска.
+Какой вариант вам сейчас ближе?</div>
+        <button type="button" class="btn btn-gold" style="width: 100%;" onclick="copyTextById('scriptPriceText', 'Прайс скопирован')">Скопировать</button>
+      </div>
+    </div>
+
+    <!-- Дожим молчунов -->
+    <div class="accordion-item">
+      <button type="button" class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span>3. Дожим «молчунов» через 24 часа</span>
+        <span class="accordion-chevron">▼</span>
+      </button>
+      <div class="accordion-body">
+        <div class="script-note">Отправлять всем, кто прочитал прайс и не ответил за сутки.</div>
+        <div class="script-box" id="scriptFollowupText">[Имя], добрый день! Возможно, вчера я слишком сухо скинул прайс.
+
+За 5 000 ₽ (бот записи) или 11 000 ₽ (связка сайт + бот) вы получаете полностью готовый инструмент под ключ за 3 дня без скрытых платежей.
+
+Могу бесплатно за 15 минут собрать демо-бота с вашими услугами и ценами, чтобы вы вживую потыкали кнопки до оплаты. Сделаем?</div>
+        <button type="button" class="btn btn-gold" style="width: 100%;" onclick="copyTextById('scriptFollowupText', 'Шаблон дожима скопирован')">Скопировать</button>
+      </div>
+    </div>
+
+    <!-- Отработка возражений -->
+    <div class="accordion-item">
+      <button type="button" class="accordion-trigger" onclick="toggleAccordion(this)">
+        <span>4. Отработка возражений («Есть ВК / Дорого»)</span>
+        <span class="accordion-chevron">▼</span>
+      </button>
+      <div class="accordion-body">
+        <div class="script-note">Короткие ответы без споров:</div>
+        <div class="script-box" id="scriptObjectionsText">• «У нас уже есть ВК / 2ГИС»:
+Отлично, значит, трафик уже идет. Но в соцсетях теряется до 30% клиентов, которым неудобно звонить или ждать ответа. Наш бот ставится кнопкой записи прямо в ваш ВК/2ГИС и сам напоминает о визите.
+
+• «Дорого / подумаем»:
+При среднем чеке услуги 2 000 ₽ бот за 5 000 ₽ окупается с 3 клиентов, которые иначе бы не дозвонились. Можем стартовать с базового бота за 3 000 ₽, а потом расширить.
+
+• «Какие гарантии?»:
+Работаем по самозанятости с официальным чеком: 50% после согласования структуры, вторые 50% — только когда проверите готового бота на своем телефоне.</div>
+        <button type="button" class="btn btn-gold" style="width: 100%;" onclick="copyTextById('scriptObjectionsText', 'Возражения скопированы')">Скопировать</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== ВКЛАДКА 4: БЭКАП / ПЛАН ==================== -->
+  <main id="tab-sync" class="tab-content">
+    <!-- Облачная БД Supabase -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Облачная БД (Supabase)</div>
+        <span class="badge-gold" id="sbCardBadge">Не подключено</span>
+      </div>
+      <div style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 10px;">
+        Подключи бесплатный проект Supabase, чтобы прогресс автоматически сохранялся в PostgreSQL и синхронизировался между ПК и телефоном.
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <input type="url" id="sbUrlInput" class="input-field" placeholder="Project URL (https://xxxxx.supabase.co)" />
+        <input type="text" id="sbKeyInput" class="input-field" placeholder="Publishable / anon public key (eyJhbG...)" />
+        <input type="text" id="sbProfileIdInput" class="input-field" value="nikita_main" placeholder="ID профиля (по умолчанию nikita_main)" />
+      </div>
+
+      <div class="action-grid" style="margin-top: 10px;">
+        <button type="button" class="btn btn-gold" onclick="connectSupabase()">Подключить и загрузить</button>
+        <button type="button" class="btn" onclick="forcePushToSupabase()">Отправить в облако</button>
+      </div>
+      <div class="sub-controls" id="sbDisconnectRow" style="display: none;">
+        <button type="button" class="btn btn-sm btn-danger-soft" onclick="disconnectSupabase()">Отключить облако на этом устройстве</button>
+      </div>
+
+      <details style="margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+        <summary style="font-size: 12.5px; font-weight: 700; color: var(--accent-gold); cursor: pointer;">
+          SQL-код для создания таблицы в Supabase (1 клик)
+        </summary>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+          Открой <b>SQL Editor → New query</b> в Supabase, вставь этот код и нажми <b>Run</b>:
+        </div>
+        <div class="sql-code-box" id="supabaseSqlCode">create table if not exists public.tracker_state (
+  id text primary key,
+  data jsonb not null,
+  updated_at timestamptz default now()
+);
+
+alter table public.tracker_state enable row level security;
+
+create policy "Allow public access to tracker_state"
+on public.tracker_state
+for all
+using (true)
+with check (true);</div>
+        <button type="button" class="btn btn-sm btn-gold-soft" style="width: 100%;" onclick="copyTextById('supabaseSqlCode', 'SQL-скрипт скопирован!')">Скопировать SQL</button>
+      </details>
+    </section>
+
+    <!-- Экспорт прогресса для ассистента -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">1. Отчёт о прогрессе в чат</div>
+        <span class="badge-green">Без потерь</span>
+      </div>
+      <div style="font-size: 13px; color: var(--text-secondary);">
+        Скопируй код своего текущего прогресса и отправь мне в чат, когда захочешь скорректировать стратегию или получить новые задачи на неделю.
+      </div>
+      <textarea id="exportProgressBox" class="json-textarea" readonly></textarea>
+      <div class="action-grid">
+        <button type="button" class="btn btn-gold" onclick="copyProgressSnapshot()">Скопировать код прогресса</button>
+        <button type="button" class="btn" onclick="downloadBackupFile()">Скачать .JSON файл</button>
+      </div>
+    </section>
+
+    <!-- Умный импорт / Замена плана без потери прогресса -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">2. Обновить план без потери прогресса</div>
+        <span class="badge-gold">Smart Merge</span>
+      </div>
+      <div style="font-size: 13px; color: var(--text-secondary);">
+        Вставь сюда JSON с обновленным планом или новыми задачами. Твои цифры по 200 контактам, закрытый долг, история сделок и все уже выполненные галочки останутся на месте.
+      </div>
+      <textarea id="importPlanInput" class="json-textarea" placeholder='Вставь сюда JSON от ассистента (например: {"roadmap": [...], "tasks": [...]})...'></textarea>
+      <button type="button" class="btn btn-gold" style="width: 100%;" onclick="applySmartPlanUpdate()">Применить новый план (сохранить прогресс)</button>
+      <div class="sub-controls">
+        <button type="button" class="btn btn-sm" onclick="pasteFromClipboardToImport()">Вставить из буфера</button>
+        <button type="button" class="btn btn-sm btn-danger-soft" onclick="openResetModal()">Полный сброс</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Нижняя навигация на 4 вкладки -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-btn active" data-target="tab-today" onclick="switchTab(this)">
+      <span class="nav-icon">📞</span>
+      <span class="nav-label">Воронка 200</span>
+    </button>
+    <button type="button" class="nav-btn" data-target="tab-plan" onclick="switchTab(this)">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">План до 31 дек</span>
+    </button>
+    <button type="button" class="nav-btn" data-target="tab-cheatsheet" onclick="switchTab(this)">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">Скрипты</span>
+    </button>
+    <button type="button" class="nav-btn" data-target="tab-sync" onclick="switchTab(this)">
+      <span class="nav-icon">🔄</span>
+      <span class="nav-label">Бэкап / План</span>
+    </button>
+  </nav>
+</div>
+
+<!-- Всплывающее уведомление -->
+<div class="toast" id="toastBox">Прогресс сохранен</div>
+
+<!-- Модальное окно редактирования текста задачи -->
+<div class="modal-backdrop" id="editTaskModal">
+  <div class="modal-card">
+    <div class="modal-title">Редактировать пункт плана</div>
+    <input type="text" id="editTaskField" class="input-field" style="margin: 10px 0 14px;" />
+    <div class="modal-actions">
+      <button type="button" class="btn" onclick="closeEditModal()">Отмена</button>
+      <button type="button" class="btn btn-gold" onclick="saveEditedTask()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно подтверждения сброса -->
+<div class="modal-backdrop" id="resetModal">
+  <div class="modal-card">
+    <div class="modal-title">Сбросить весь прогресс?</div>
+    <div class="modal-desc">Все задачи, счетчики базы из 200 клиентов, история закрытия долга и отметки этапов вернутся к начальным значениям.</div>
+    <div class="modal-actions">
+      <button type="button" class="btn" onclick="closeResetModal()">Отмена</button>
+      <button type="button" class="btn btn-danger-soft" onclick="confirmFullReset()">Да, сбросить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'mani_digital_tracker_v2';
+  const SUPABASE_CFG_KEY = 'mani_digital_supabase_cfg_v1';
+  const DEBT_GOAL = 50000;
+  const BASE_TOTAL = 200;
+  const DAILY_NORM = 15;
+  let cloudPushTimer = null;
+  let isCloudConnected = false;
+
+  // Полный план до 31 декабря 2026 по неделям и расписанию СГУПС + КЦ
+  function getDefaultRoadmap() {
+    return [
+      {
+        id: 'w1',
+        title: 'Неделя 1: Старт и первые 50 звонков',
+        dates: '23 – 29 ноя',
+        scheduleHint: 'Вт (выходной), Ср (с 11:00), Пт/Сб (с 13:30) — окна под запуск и обзвон',
+        items: [
+          { id: 'w1_1', day: 'Вт 24 ноя', text: 'Перезаписать демо-видео бота VIBE без музыки и обновить даты слотов', done: false },
+          { id: 'w1_2', day: 'Вт 24 ноя', text: 'Договориться с партнером о правилах 50/50 и разделить базу 200 клиентов', done: false },
+          { id: 'w1_3', day: 'Вт 24 ноя', text: 'Оформить самозанятость в приложении «Мой налог» (5 минут)', done: false },
+          { id: 'w1_4', day: 'Ср 25 ноя', text: 'Сделать первые 15 холодных звонков по 2ГИС и кинуть демо в TG/WA', done: false },
+          { id: 'w1_5', day: 'Чт–Пт', text: 'Дойти до 35 прозвоненных контактов + дожать молчунов через 24 часа', done: false },
+          { id: 'w1_6', day: 'Сб–Вс', text: 'Закрыть отметку 50/200 по базе и взять первую предоплату 50%', done: false }
+        ]
+      },
+      {
+        id: 'w2',
+        title: 'Неделя 2: Разгон (50 → 105 контактов)',
+        dates: '30 ноя – 6 дек',
+        scheduleHint: 'Ежедневно 1,5 ч вечером на 15 звонков; Вт и Вс — сборка проданных ботов',
+        items: [
+          { id: 'w2_1', day: 'Пн–Вт', text: 'Развернуть первого проданного бота по шаблону VIBE и сдать заказчику', done: false },
+          { id: 'w2_2', day: 'Ср–Чт', text: 'Прозвонить еще 30 салонов/студий (итого 80/200) + рассылка демо', done: false },
+          { id: 'w2_3', day: 'Пт–Сб', text: 'Довести базу до 105/200 и сделать серию дожимов по всем открытым чатам', done: false },
+          { id: 'w2_4', day: 'Вс 6 дек', text: 'Сверить кассу: закрыть минимум 15 000 – 20 000 ₽ в счет долга', done: false }
+        ]
+      },
+      {
+        id: 'w3',
+        title: 'Неделя 3: Экватор и парсеры (105 → 155)',
+        dates: '7 – 13 дек',
+        scheduleHint: 'Упор на предновогодний ажиотаж в бьюти/авто + отклики на парсинг Python',
+        items: [
+          { id: 'w3_1', day: 'Пн–Вт', text: 'Запустить скрипт-заход «Разгрузите администратора перед новогодним потоком»', done: false },
+          { id: 'w3_2', day: 'Ср–Чт', text: 'Пройти контакты 105 → 135 и взять 1 заказ на парсер (6 000 – 12 000 ₽)', done: false },
+          { id: 'w3_3', day: 'Пт–Вс', text: 'Дойти до 155/200 по холодной базе + допродать поддержку 1 500 ₽/мес', done: false }
+        ]
+      },
+      {
+        id: 'w4',
+        title: 'Неделя 4: Дожим всей базы 200/200',
+        dates: '14 – 20 дек',
+        scheduleHint: 'Закрываем остаток базы 155 → 200 и собираем максимум предоплат до сессии',
+        items: [
+          { id: 'w4_1', day: 'Пн–Ср', text: 'Дозвонить последние 45 контактов из базы (финиш 200/200)', done: false },
+          { id: 'w4_2', day: 'Чт–Пт', text: 'Второй круг прозвона по тем, кто просил «перезвонить в середине декабря»', done: false },
+          { id: 'w4_3', day: 'Сб–Вс', text: 'Сборка всех оплаченных ботов и лендингов (оставить хвостов по минимуму)', done: false }
+        ]
+      },
+      {
+        id: 'w5',
+        title: 'Финишный спринт: Закрытие долга',
+        dates: '21 – 31 дек',
+        scheduleHint: 'Сдача проектов, сбор постоплат 50% и полное закрытие долга 50 000 ₽',
+        items: [
+          { id: 'w5_1', day: '21–25 дек', text: 'Завершить все разработки и перевести клиентов на предновогоднюю рассылку', done: false },
+          { id: 'w5_2', day: '26–28 дек', text: 'Собрать все вторые 50% постоплаты по завершенным заказам', done: false },
+          { id: 'w5_3', day: '29–30 дек', text: 'Свести доход с IT + зарплату колл-центра и полностью закрыть долг 50 000 ₽', done: false },
+          { id: 'w5_4', day: '31 дек', text: 'Выгрузить финальный JSON прогресса и зафиксировать план масштабирования на 2027', done: false }
+        ]
+      }
+    ];
+  }
+
+  function getDefaultState() {
+    return {
+      funnel: {
+        calls: 0,
+        demos: 0,
+        leads: 0,
+        closed: 0,
+        dailyTouches: 0
+      },
+      selectedTag: 'Срочно',
+      tasks: [
+        {
+          id: 't1',
+          text: 'Перезаписать демо-видео бота VIBE без музыки и с актуальными датами',
+          tag: 'Срочно',
+          done: false
+        },
+        {
+          id: 't2',
+          text: 'Поговорить с партнером (правила 50/50 + делим базу 200 контактов)',
+          tag: 'Срочно',
+          done: false
+        },
+        {
+          id: 't3',
+          text: 'Оформить самозанятость в приложении «Мой налог»',
+          tag: 'База',
+          done: false
+        },
+        {
+          id: 't4',
+          text: 'Сделать 15 звонков по холодной базе 2ГИС по скрипту',
+          tag: 'Продажи',
+          done: false
+        }
+      ],
+      dealShare: 1,
+      deals: [],
+      roadmap: getDefaultRoadmap(),
+      updatedAt: 0
+    };
+  }
+
+  let state = loadState();
+  let editingTarget = null; // { type: 'task' | 'roadmap', stageId?, id }
+  let vercelEnvConfig = null;
+
+  function normalizeSupabaseUrl(rawUrl) {
+    let clean = (rawUrl || '').trim();
+    if (!clean) return '';
+    if (!/^https?:\/\//i.test(clean)) clean = 'https://' + clean;
+    clean = clean.replace(/\/rest\/v1.*$/i, '').replace(/\/+$/, '');
+    return clean;
+  }
+
+  function buildSupabaseHeaders(key, extra = {}) {
+    const cleanKey = (key || '').trim();
+    const headers = {
+      'apikey': cleanKey,
+      ...extra
+    };
+    // Новые ключи sb_publishable_... передаются только через apikey; JWT (eyJ...) — еще и в Bearer
+    if (cleanKey.startsWith('eyJ')) {
+      headers['Authorization'] = `Bearer ${cleanKey}`;
+    }
+    return headers;
+  }
+
+  function loadSupabaseConfig() {
+    if (vercelEnvConfig && vercelEnvConfig.url && vercelEnvConfig.key) {
+      return vercelEnvConfig;
+    }
+    try {
+      const raw = localStorage.getItem(SUPABASE_CFG_KEY);
+      if (!raw) return { url: '', key: '', profileId: 'nikita_main' };
+      const parsed = JSON.parse(raw);
+      return {
+        url: normalizeSupabaseUrl(parsed.url),
+        key: (parsed.key || '').trim(),
+        profileId: (parsed.profileId || 'nikita_main').trim() || 'nikita_main'
+      };
+    } catch (e) {
+      return { url: '', key: '', profileId: 'nikita_main' };
+    }
+  }
+
+  async function initVercelSupabaseEnv() {
+    try {
+      const res = await fetch('/api/config');
+      if (!res.ok) return;
+      const env = await res.json();
+      if (env && env.url && env.key) {
+        vercelEnvConfig = {
+          url: normalizeSupabaseUrl(env.url),
+          key: env.key.trim(),
+          profileId: (env.profileId || 'nikita_main').trim()
+        };
+        fillSupabaseInputs();
+      }
+    } catch (e) {
+      // Локальный запуск без Vercel API — работаем через localStorage или ручной ввод
+    }
+  }
+
+  function saveSupabaseConfig(cfg) {
+    localStorage.setItem(SUPABASE_CFG_KEY, JSON.stringify({
+      url: normalizeSupabaseUrl(cfg.url),
+      key: (cfg.key || '').trim(),
+      profileId: (cfg.profileId || 'nikita_main').trim() || 'nikita_main'
+    }));
+  }
+
+  function setCloudBadge(status, text) {
+    const pill = document.getElementById('cloudStatusPill');
+    const cardBadge = document.getElementById('sbCardBadge');
+    if (pill) {
+      pill.className = 'sync-pill' + (status ? ' ' + status : '');
+      pill.textContent = text;
+    }
+    if (cardBadge) {
+      cardBadge.textContent = text;
+      cardBadge.className = status === 'online' ? 'badge-green' : 'badge-gold';
+    }
+  }
+
+  function goToSyncTab() {
+    const btn = document.querySelector('.nav-btn[data-target="tab-sync"]');
+    if (btn) switchTab(btn);
+  }
+
+  function fillSupabaseInputs() {
+    const cfg = loadSupabaseConfig();
+    const urlEl = document.getElementById('sbUrlInput');
+    const keyEl = document.getElementById('sbKeyInput');
+    const idEl = document.getElementById('sbProfileIdInput');
+    const discRow = document.getElementById('sbDisconnectRow');
+    if (urlEl) urlEl.value = cfg.url;
+    if (keyEl) keyEl.value = cfg.key;
+    if (idEl) idEl.value = cfg.profileId;
+    if (discRow) discRow.style.display = (cfg.url && cfg.key) ? 'flex' : 'none';
+  }
+
+  async function pullFromSupabase(silent = true) {
+    const cfg = loadSupabaseConfig();
+    if (!cfg.url || !cfg.key) {
+      isCloudConnected = false;
+      setCloudBadge('', 'Локально');
+      return false;
+    }
+
+    setCloudBadge('syncing', 'Синхр...');
+    try {
+      const endpoint = `${cfg.url}/rest/v1/tracker_state?id=eq.${encodeURIComponent(cfg.profileId)}&select=data,updated_at`;
+      const res = await fetch(endpoint, {
+        headers: buildSupabaseHeaders(cfg.key)
+      });
+
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const rows = await res.json();
+      isCloudConnected = true;
+
+      if (Array.isArray(rows) && rows.length > 0 && rows[0].data) {
+        const remoteData = rows[0].data;
+        const remoteTs = Number(remoteData.updatedAt || 0);
+        const localTs = Number(state.updatedAt || 0);
+
+        if (remoteTs >= localTs) {
+          const base = getDefaultState();
+          state = {
+            ...base,
+            ...remoteData,
+            funnel: { ...base.funnel, ...(remoteData.funnel || {}) },
+            roadmap: Array.isArray(remoteData.roadmap) && remoteData.roadmap.length ? remoteData.roadmap : base.roadmap,
+            tasks: Array.isArray(remoteData.tasks) ? remoteData.tasks : base.tasks,
+            deals: Array.isArray(remoteData.deals) ? remoteData.deals : []
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          renderAll();
+          if (!silent) showToast('Данные загружены из Supabase!');
+        } else {
+          await pushToSupabase(true);
+        }
+      } else {
+        await pushToSupabase(true);
+        if (!silent) showToast('Профиль создан в Supabase!');
+      }
+
+      setCloudBadge('online', 'Supabase • Онлайн');
+      return true;
+    } catch (err) {
+      isCloudConnected = false;
+      setCloudBadge('error', 'Ошибка БД');
+      if (!silent) showToast('Ошибка подключения: проверь URL, Key и SQL');
+      return false;
+    }
+  }
+
+  async function pushToSupabase(silent = true) {
+    const cfg = loadSupabaseConfig();
+    if (!cfg.url || !cfg.key) return false;
+
+    setCloudBadge('syncing', 'Сохранение...');
+    try {
+      const endpoint = `${cfg.url}/rest/v1/tracker_state?on_conflict=id`;
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: buildSupabaseHeaders(cfg.key, {
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates,return=minimal'
+        }),
+        body: JSON.stringify({
+          id: cfg.profileId,
+          data: state,
+          updated_at: new Date().toISOString()
+        })
+      });
+
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      isCloudConnected = true;
+      setCloudBadge('online', 'Supabase • Онлайн');
+      if (!silent) showToast('Сохранено в облако Supabase');
+      return true;
+    } catch (err) {
+      setCloudBadge('error', 'Ошибка БД');
+      if (!silent) showToast('Не удалось отправить в Supabase');
+      return false;
+    }
+  }
+
+  function scheduleCloudSync() {
+    const cfg = loadSupabaseConfig();
+    if (!cfg.url || !cfg.key) return;
+    clearTimeout(cloudPushTimer);
+    cloudPushTimer = setTimeout(() => {
+      pushToSupabase(true);
+    }, 600);
+  }
+
+  async function connectSupabase() {
+    const url = normalizeSupabaseUrl(document.getElementById('sbUrlInput').value);
+    const key = document.getElementById('sbKeyInput').value.trim();
+    const profileId = document.getElementById('sbProfileIdInput').value.trim() || 'nikita_main';
+
+    if (!url || !key) {
+      showToast('Заполни Project URL и Publishable key');
+      return;
+    }
+
+    saveSupabaseConfig({ url, key, profileId });
+    fillSupabaseInputs();
+    await pullFromSupabase(false);
+  }
+
+  async function forcePushToSupabase() {
+    state.updatedAt = Date.now();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    await pushToSupabase(false);
+  }
+
+  function disconnectSupabase() {
+    localStorage.removeItem(SUPABASE_CFG_KEY);
+    isCloudConnected = false;
+    fillSupabaseInputs();
+    setCloudBadge('', 'Локально');
+    showToast('Облако отключено на этом устройстве');
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return getDefaultState();
+      const parsed = JSON.parse(raw);
+      const base = getDefaultState();
+      return {
+        ...base,
+        ...parsed,
+        funnel: { ...base.funnel, ...(parsed.funnel || {}) },
+        roadmap: Array.isArray(parsed.roadmap) && parsed.roadmap.length ? parsed.roadmap : base.roadmap,
+        tasks: Array.isArray(parsed.tasks) ? parsed.tasks : base.tasks,
+        deals: Array.isArray(parsed.deals) ? parsed.deals : []
+      };
+    } catch (e) {
+      return getDefaultState();
+    }
+  }
+
+  function saveState(silent = true) {
+    try {
+      state.updatedAt = Date.now();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      refreshExportBox();
+      scheduleCloudSync();
+      if (!silent) showToast('Прогресс сохранен');
+    } catch (e) {
+      showToast('Ошибка сохранения памяти');
+    }
+  }
+
+  function switchTab(btn) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    const targetId = btn.getAttribute('data-target');
+    document.getElementById(targetId).classList.add('active');
+    if (targetId === 'tab-sync') refreshExportBox();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function formatRub(num) {
+    return Math.round(num).toLocaleString('ru-RU') + ' ₽';
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const box = document.getElementById('toastBox');
+    box.textContent = msg;
+    box.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => box.classList.remove('show'), 2300);
+  }
+
+  function getDaysUntilNewYear() {
+    const now = new Date();
+    const target = new Date(2026, 11, 31, 23, 59, 59);
+    return Math.max(1, Math.ceil((target - now) / (1000 * 60 * 60 * 24)));
+  }
+
+  function updateCountdown() {
+    const days = getDaysUntilNewYear();
+    document.getElementById('daysLeftBadge').textContent = days + ' дн. до НГ';
+  }
+
+  // ==================== ВОРОНКА 200 ====================
+  function changeMetric(key, delta) {
+    const current = state.funnel[key] || 0;
+    const next = Math.max(0, current + delta);
+    if (next === current) return;
+
+    state.funnel[key] = next;
+    if (key === 'calls') {
+      state.funnel.dailyTouches = Math.max(0, (state.funnel.dailyTouches || 0) + delta);
+    }
+    saveState();
+    renderFunnel();
+  }
+
+  function resetDailyCounter() {
+    state.funnel.dailyTouches = 0;
+    saveState();
+    renderFunnel();
+    showToast('Дневной счетчик сброшен (0 / 15)');
+  }
+
+  function renderFunnel() {
+    const { calls, demos, leads, closed, dailyTouches } = state.funnel;
+    const cappedCalls = Math.min(BASE_TOTAL, calls);
+    const left = Math.max(0, BASE_TOTAL - calls);
+    const pct = Math.min(100, Math.round((calls / BASE_TOTAL) * 100));
+    const daysLeft = getDaysUntilNewYear();
+    const recDaily = left > 0 ? Math.max(1, Math.ceil(left / daysLeft)) : 0;
+
+    document.getElementById('baseDoneText').textContent = `${calls} / ${BASE_TOTAL} (ост. ${left})`;
+    document.getElementById('recommendedDailyText').textContent = left > 0 ? `${recDaily} звонков / день` : 'База пройдена!';
+    document.getElementById('baseProgressBar').style.width = pct + '%';
+    document.getElementById('dailyNormBadge').textContent = `Сегодня: ${dailyTouches} / ${DAILY_NORM}`;
+
+    document.getElementById('metricCalls').textContent = calls;
+    document.getElementById('metricDemos').textContent = demos;
+    document.getElementById('metricLeads').textContent = leads;
+    document.getElementById('metricClosed').textContent = closed;
+
+    const c1 = calls > 0 ? Math.round((demos / calls) * 100) : 0;
+    const c2 = demos > 0 ? Math.round((leads / demos) * 100) : 0;
+    const c3 = calls > 0 ? ((closed / calls) * 100).toFixed(1).replace('.0', '') : 0;
+
+    document.getElementById('convCallToDemo').textContent = c1 + '%';
+    document.getElementById('convDemoToLead').textContent = c2 + '%';
+    document.getElementById('convTotalClose').textContent = c3 + '%';
+  }
+
+  // ==================== ОПЕРАТИВНЫЕ ЗАДАЧИ ====================
+  function selectTag(btn) {
+    document.querySelectorAll('#tagSelector .tag-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    state.selectedTag = btn.getAttribute('data-tag');
+  }
+
+  function handleAddTask(e) {
+    e.preventDefault();
+    const input = document.getElementById('newTaskInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    state.tasks.unshift({
+      id: 'task_' + Date.now(),
+      text: text,
+      tag: state.selectedTag || 'Продажи',
+      done: false
+    });
+    input.value = '';
+    saveState();
+    renderTasks();
+    showToast('Задача добавлена');
+  }
+
+  function toggleTask(id) {
+    const task = state.tasks.find(t => t.id === id);
+    if (!task) return;
+    task.done = !task.done;
+    saveState();
+    renderTasks();
+  }
+
+  function deleteTask(id) {
+    state.tasks = state.tasks.filter(t => t.id !== id);
+    saveState();
+    renderTasks();
+  }
+
+  function openEditModal(type, id, stageId = null) {
+    editingTarget = { type, id, stageId };
+    let currentText = '';
+    if (type === 'task') {
+      const t = state.tasks.find(x => x.id === id);
+      if (t) currentText = t.text;
+    } else if (type === 'roadmap') {
+      const s = state.roadmap.find(x => x.id === stageId);
+      const item = s ? s.items.find(x => x.id === id) : null;
+      if (item) currentText = item.text;
+    }
+    document.getElementById('editTaskField').value = currentText;
+    document.getElementById('editTaskModal').classList.add('open');
+  }
+
+  function closeEditModal() {
+    editingTarget = null;
+    document.getElementById('editTaskModal').classList.remove('open');
+  }
+
+  function saveEditedTask() {
+    if (!editingTarget) return;
+    const newText = document.getElementById('editTaskField').value.trim();
+    if (!newText) return;
+
+    if (editingTarget.type === 'task') {
+      const t = state.tasks.find(x => x.id === editingTarget.id);
+      if (t) t.text = newText;
+      renderTasks();
+    } else if (editingTarget.type === 'roadmap') {
+      const s = state.roadmap.find(x => x.id === editingTarget.stageId);
+      const item = s ? s.items.find(x => x.id === editingTarget.id) : null;
+      if (item) item.text = newText;
+      renderRoadmap();
+    }
+    saveState();
+    closeEditModal();
+    showToast('Изменения сохранены');
+  }
+
+  function renderTasks() {
+    const container = document.getElementById('taskListContainer');
+    const doneCount = state.tasks.filter(t => t.done).length;
+    document.getElementById('tasksCounterBadge').textContent = `${doneCount} / ${state.tasks.length}`;
+
+    if (state.tasks.length === 0) {
+      container.innerHTML = `<div style="text-align:center; color: var(--text-secondary); padding: 14px; font-size: 13px;">Список пуст. Добавь задачу выше.</div>`;
+      return;
+    }
+
+    container.innerHTML = state.tasks.map(t => `
+      <div class="task-item ${t.done ? 'done' : ''}">
+        <button type="button" class="checkbox-btn" onclick="toggleTask('${t.id}')" aria-label="Выполнить">
+          ${t.done ? '✓' : ''}
+        </button>
+        <div class="task-body" onclick="toggleTask('${t.id}')">
+          <div class="task-text">${escapeHtml(t.text)}</div>
+          <div class="task-meta">
+            <span class="priority-badge prio-${escapeHtml(t.tag)}">${escapeHtml(t.tag)}</span>
+          </div>
+        </div>
+        <button type="button" class="mini-icon-btn" onclick="openEditModal('task', '${t.id}')" aria-label="Редактировать">✎</button>
+        <button type="button" class="delete-icon-btn" onclick="deleteTask('${t.id}')" aria-label="Удалить">✕</button>
+      </div>
+    `).join('');
+  }
+
+  // ==================== ФИНАНСЫ И ДОЛГ ====================
+  function setDealShare(share) {
+    state.dealShare = share;
+    saveState();
+    renderDebtSection();
+  }
+
+  function addDeal(title, fullPrice) {
+    const netAmount = Math.round(fullPrice * state.dealShare);
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+
+    state.deals.unshift({
+      id: 'deal_' + Date.now(),
+      title: title,
+      fullPrice: fullPrice,
+      share: state.dealShare,
+      netAmount: netAmount,
+      date: dateStr
+    });
+    saveState();
+    renderDebtSection();
+    showToast(`+${formatRub(netAmount)} в закрытие долга!`);
+  }
+
+  function addCustomDeal() {
+    const input = document.getElementById('customDealInput');
+    const val = parseFloat(input.value);
+    if (!val || val <= 0) {
+      showToast('Введите сумму');
+      return;
+    }
+    addDeal('Поступление (КЦ / Своя)', val);
+    input.value = '';
+  }
+
+  function deleteDeal(id) {
+    state.deals = state.deals.filter(d => d.id !== id);
+    saveState();
+    renderDebtSection();
+    showToast('Запись удалена');
+  }
+
+  function renderDebtSection() {
+    document.getElementById('split100Btn').classList.toggle('active', state.dealShare === 1);
+    document.getElementById('split50Btn').classList.toggle('active', state.dealShare === 0.5);
+
+    document.querySelectorAll('.deal-btn-price').forEach(el => {
+      const base = Number(el.getAttribute('data-base'));
+      const actual = Math.round(base * state.dealShare);
+      el.textContent = state.dealShare === 1
+        ? formatRub(base)
+        : `${formatRub(actual)} (из ${base.toLocaleString('ru-RU')})`;
+    });
+
+    const paid = state.deals.reduce((sum, d) => sum + d.netAmount, 0);
+    const left = Math.max(0, DEBT_GOAL - paid);
+    const pct = Math.min(100, Math.round((paid / DEBT_GOAL) * 100));
+
+    // Обновление шапки и вкладки
+    document.getElementById('headerDebtPaid').textContent = `${formatRub(paid)} (${pct}%)`;
+    document.getElementById('headerDebtLeft').textContent = formatRub(left);
+    document.getElementById('headerDebtBar').style.width = pct + '%';
+
+    document.getElementById('debtPaidText').textContent = `${formatRub(paid)} / ${formatRub(DEBT_GOAL)}`;
+    document.getElementById('debtLeftText').textContent = formatRub(left);
+    document.getElementById('debtPercentBadge').textContent = pct + '%';
+    document.getElementById('debtProgressBar').style.width = pct + '%';
+
+    const listEl = document.getElementById('dealsHistoryList');
+    if (state.deals.length === 0) {
+      listEl.innerHTML = `<div style="font-size:12.5px; color:var(--text-muted); padding: 8px 0;">Пока нет поступлений. Нажми на тариф выше после оплаты или введи доход с КЦ.</div>`;
+      return;
+    }
+
+    listEl.innerHTML = state.deals.map(d => `
+      <div class="history-item">
+        <div class="history-info">
+          <span class="history-title">${escapeHtml(d.title)} (${d.share === 1 ? '100%' : '50/50'})</span>
+          <span class="history-sub">${d.date} • Общая сумма: ${formatRub(d.fullPrice)}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="history-sum">+${formatRub(d.netAmount)}</span>
+          <button type="button" class="delete-icon-btn" onclick="deleteDeal('${d.id}')" aria-label="Удалить">✕</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ==================== КАЛЕНДАРНЫЙ ПЛАН ДО 31 ДЕКАБРЯ ====================
+  function toggleCheckpoint(stageId, itemId) {
+    const stage = state.roadmap.find(s => s.id === stageId);
+    if (!stage) return;
+    const item = stage.items.find(i => i.id === itemId);
+    if (!item) return;
+    item.done = !item.done;
+    saveState();
+    renderRoadmap();
+  }
+
+  function addRoadmapItem(stageId) {
+    const input = document.getElementById('add_stage_' + stageId);
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+
+    const stage = state.roadmap.find(s => s.id === stageId);
+    if (!stage) return;
+
+    stage.items.push({
+      id: stageId + '_custom_' + Date.now(),
+      day: 'Доп.',
+      text: text,
+      done: false
+    });
+    input.value = '';
+    saveState();
+    renderRoadmap();
+    showToast('Шаг добавлен в неделю');
+  }
+
+  function deleteRoadmapItem(stageId, itemId) {
+    const stage = state.roadmap.find(s => s.id === stageId);
+    if (!stage) return;
+    stage.items = stage.items.filter(i => i.id !== itemId);
+    saveState();
+    renderRoadmap();
+    showToast('Пункт удален');
+  }
+
+  function renderRoadmap() {
+    const container = document.getElementById('roadmapContainer');
+    let totalItems = 0;
+    let doneItems = 0;
+
+    state.roadmap.forEach(s => {
+      s.items.forEach(i => {
+        totalItems++;
+        if (i.done) doneItems++;
+      });
+    });
+
+    document.getElementById('roadmapProgressBadge').textContent = `${doneItems} / ${totalItems}`;
+
+    container.innerHTML = state.roadmap.map((stage, idx) => `
+      <div class="stage-card ${idx === 0 ? 'current-week' : ''}">
+        <div class="stage-header">
+          <span class="stage-name">${escapeHtml(stage.title)}</span>
+          <span class="stage-date">${escapeHtml(stage.dates)}</span>
+        </div>
+        ${stage.scheduleHint ? `<div class="stage-schedule-hint">${escapeHtml(stage.scheduleHint)}</div>` : ''}
+        <div>
+          ${stage.items.map(item => `
+            <div class="checkpoint-row ${item.done ? 'done' : ''}">
+              <button type="button" class="checkbox-btn" style="width:20px; height:20px; min-width:20px; font-size:12px;" onclick="toggleCheckpoint('${stage.id}', '${item.id}')">
+                ${item.done ? '✓' : ''}
+              </button>
+              <div class="checkpoint-text-wrap" onclick="toggleCheckpoint('${stage.id}', '${item.id}')">
+                ${item.day ? `<span class="checkpoint-day-pill">${escapeHtml(item.day)}</span>` : ''}
+                <span class="checkpoint-label" style="font-size:13px; line-height:1.35;">${escapeHtml(item.text)}</span>
+              </div>
+              <button type="button" class="mini-icon-btn" onclick="openEditModal('roadmap', '${item.id}', '${stage.id}')" aria-label="Редактировать">✎</button>
+              <button type="button" class="mini-icon-btn" onclick="deleteRoadmapItem('${stage.id}', '${item.id}')" aria-label="Удалить">✕</button>
+            </div>
+          `).join('')}
+        </div>
+        <div class="stage-add-row">
+          <input type="text" id="add_stage_${stage.id}" class="stage-add-input" placeholder="+ Добавить задачу в эту неделю..." onkeydown="if(event.key==='Enter'){event.preventDefault();addRoadmapItem('${stage.id}');}" />
+          <button type="button" class="btn btn-sm btn-gold-soft" onclick="addRoadmapItem('${stage.id}')">+</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ==================== СИНХРОНИЗАЦИЯ И SMART MERGE ====================
+  function refreshExportBox() {
+    const box = document.getElementById('exportProgressBox');
+    if (!box) return;
+    const paid = state.deals.reduce((sum, d) => sum + d.netAmount, 0);
+    const snapshot = {
+      exportedAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      summary: {
+        callsDone: `${state.funnel.calls}/${BASE_TOTAL}`,
+        demosSent: state.funnel.demos,
+        leads: state.funnel.leads,
+        closedOrders: state.funnel.closed,
+        debtPaid: `${paid}/${DEBT_GOAL}`
+      },
+      funnel: state.funnel,
+      dealShare: state.dealShare,
+      deals: state.deals,
+      tasks: state.tasks,
+      roadmap: state.roadmap
+    };
+    box.value = JSON.stringify(snapshot, null, 2);
+  }
+
+  function copyProgressSnapshot() {
+    refreshExportBox();
+    copyTextById('exportProgressBox', 'Код прогресса скопирован — отправь в чат!');
+  }
+
+  function downloadBackupFile() {
+    refreshExportBox();
+    const content = document.getElementById('exportProgressBox').value;
+    const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mani_digital_progress_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Файл .JSON скачан');
+  }
+
+  async function pasteFromClipboardToImport() {
+    try {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('importPlanInput').value = text;
+        showToast('Вставлено из буфера');
+      } else {
+        showToast('Вставь текст вручную в поле выше');
+      }
+    } catch (e) {
+      showToast('Вставь текст вручную в поле выше');
+    }
+  }
+
+  // Умное слияние нового плана от ассистента БЕЗ ПОТЕРИ ПРОГРЕССА
+  function applySmartPlanUpdate() {
+    const raw = document.getElementById('importPlanInput').value.trim();
+    if (!raw) {
+      showToast('Вставь JSON нового плана в поле выше');
+      return;
+    }
+
+    try {
+      const incoming = JSON.parse(raw);
+      if (!incoming || typeof incoming !== 'object') {
+        throw new Error('Неверный формат объекта');
+      }
+
+      // 1. Собираем карту уже выполненных пунктов по id и по тексту, чтобы не потерять прогресс
+      const doneRoadmapIds = new Set();
+      const doneRoadmapTexts = new Set();
+      state.roadmap.forEach(stage => {
+        stage.items.forEach(item => {
+          if (item.done) {
+            doneRoadmapIds.add(item.id);
+            doneRoadmapTexts.add(item.text.trim().toLowerCase());
+          }
+        });
+      });
+
+      const doneTaskIds = new Set();
+      const doneTaskTexts = new Set();
+      state.tasks.forEach(t => {
+        if (t.done) {
+          doneTaskIds.add(t.id);
+          doneTaskTexts.add(t.text.trim().toLowerCase());
+        }
+      });
+
+      // 2. Обновляем дорожную карту (этапы до 31 дек), сохраняя отметки выполнения
+      if (Array.isArray(incoming.roadmap) && incoming.roadmap.length > 0) {
+        state.roadmap = incoming.roadmap.map((stage, sIdx) => ({
+          id: stage.id || `w_imp_${sIdx + 1}`,
+          title: stage.title || `Этап ${sIdx + 1}`,
+          dates: stage.dates || '',
+          scheduleHint: stage.scheduleHint || '',
+          items: Array.isArray(stage.items) ? stage.items.map((item, iIdx) => {
+            const itemId = item.id || `imp_${sIdx}_${iIdx}`;
+            const itemText = String(item.text || '').trim();
+            const wasDone = Boolean(item.done) ||
+              doneRoadmapIds.has(itemId) ||
+              doneRoadmapTexts.has(itemText.toLowerCase());
+            return {
+              id: itemId,
+              day: item.day || '',
+              text: itemText,
+              done: wasDone
+            };
+          }) : []
+        }));
+      }
+
+      // 3. Обновляем оперативные задачи, сохраняя выполненные
+      if (Array.isArray(incoming.tasks)) {
+        const preservedDoneTasks = state.tasks.filter(t => t.done);
+        const incomingTasks = incoming.tasks.map((t, idx) => {
+          const tId = t.id || `t_imp_${Date.now()}_${idx}`;
+          const tText = String(t.text || '').trim();
+          const wasDone = Boolean(t.done) ||
+            doneTaskIds.has(tId) ||
+            doneTaskTexts.has(tText.toLowerCase());
+          return {
+            id: tId,
+            text: tText,
+            tag: t.tag || 'Продажи',
+            done: wasDone
+          };
+        });
+
+        // Объединяем без дубликатов по тексту
+        const seenTexts = new Set(incomingTasks.map(t => t.text.toLowerCase()));
+        const uniqueOldDone = preservedDoneTasks.filter(t => !seenTexts.has(t.text.toLowerCase()));
+        state.tasks = [...incomingTasks, ...uniqueOldDone];
+      }
+
+      // 4. Счетчики воронки 200 (state.funnel), долг (state.deals) и доля (state.dealShare) остаются нетронутыми!
+      saveState();
+      renderAll();
+      document.getElementById('importPlanInput').value = '';
+      showToast('План обновлен без потери прогресса!');
+    } catch (err) {
+      showToast('Ошибка JSON: проверь скобки и формат');
+    }
+  }
+
+  // ==================== ШПАРГАЛКА И УТИЛИТЫ ====================
+  function toggleAccordion(triggerBtn) {
+    const item = triggerBtn.closest('.accordion-item');
+    item.classList.toggle('open');
+  }
+
+  function copyTextToClipboard(text, successMsg) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      showToast(successMsg || 'Скопировано в буфер');
+    } catch (err) {
+      showToast('Не удалось скопировать');
+    }
+    document.body.removeChild(textarea);
+  }
+
+  function copyTextById(elementId, successMsg) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const text = typeof el.value === 'string' ? el.value.trim() : el.textContent.trim();
+    copyTextToClipboard(text, successMsg);
+  }
+
+  function openResetModal() {
+    document.getElementById('resetModal').classList.add('open');
+  }
+
+  function closeResetModal() {
+    document.getElementById('resetModal').classList.remove('open');
+  }
+
+  function confirmFullReset() {
+    state = getDefaultState();
+    saveState();
+    renderAll();
+    closeResetModal();
+    showToast('Все данные сброшены к начальным');
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function renderAll() {
+    updateCountdown();
+    renderFunnel();
+    renderTasks();
+    renderDebtSection();
+    renderRoadmap();
+    refreshExportBox();
+  }
+
+  // Инициализация при загрузке + автосинхронизация с Supabase
+  (async function bootstrapApp() {
+    fillSupabaseInputs();
+    renderAll();
+    await initVercelSupabaseEnv();
+    await pullFromSupabase(true);
+  })();
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      pullFromSupabase(true);
+    }
+  });
+</script>
+</body>
+</html>
