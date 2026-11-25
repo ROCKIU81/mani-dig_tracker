@@ -768,6 +768,37 @@
     .prio-Код { background: var(--accent-blue-dim); color: var(--accent-blue); }
     .prio-База { background: var(--accent-green-dim); color: var(--accent-green); }
 
+    .task-item.overdue-urgent {
+      border-color: rgba(239, 68, 68, 0.5);
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.08), var(--bg-elevated));
+    }
+
+    .overdue-pill {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(239, 68, 68, 0.18);
+      color: #FCA5A5;
+    }
+
+    .completed-archive-details {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .completed-archive-summary {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--accent-green);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
     .delete-icon-btn {
       background: transparent;
       border: none;
@@ -1252,8 +1283,14 @@
     <!-- Оперативные задачи на сегодня -->
     <section class="card">
       <div class="card-header">
-        <div class="card-title">Фокус на сегодня</div>
-        <span class="badge-green" id="tasksCounterBadge">0 / 0</span>
+        <div>
+          <div class="card-title">Фокус на сегодня</div>
+          <div id="todayDateSubtitle" style="font-size: 11.5px; color: var(--accent-gold); margin-top: 2px;"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <button type="button" class="btn btn-sm btn-gold-soft" onclick="pullTodayPlanTasks()" title="Подтянуть задачи из плана на сегодня">Из плана</button>
+          <span class="badge-green" id="tasksCounterBadge">0 / 0</span>
+        </div>
       </div>
 
       <form class="task-form" onsubmit="handleAddTask(event)">
@@ -1270,6 +1307,14 @@
       </form>
 
       <div class="task-list" id="taskListContainer"></div>
+
+      <details class="completed-archive-details" id="completedArchiveBox">
+        <summary class="completed-archive-summary">
+          <span>Архив выполненных задач (в БД)</span>
+          <span class="badge-green" id="completedHistoryCount">0</span>
+        </summary>
+        <div class="task-list" id="completedHistoryList" style="margin-top: 10px;"></div>
+      </details>
     </section>
   </main>
 
@@ -1467,13 +1512,9 @@
   updated_at timestamptz default now()
 );
 
-alter table public.tracker_state enable row level security;
-
-create policy "Allow public access to tracker_state"
-on public.tracker_state
-for all
-using (true)
-with check (true);</div>
+alter table public.tracker_state disable row level security;
+grant usage on schema public to anon, authenticated;
+grant all on table public.tracker_state to anon, authenticated;</div>
         <button type="button" class="btn btn-sm btn-gold-soft" style="width: 100%;" onclick="copyTextById('supabaseSqlCode', 'SQL-скрипт скопирован!')">Скопировать SQL</button>
       </details>
     </section>
@@ -1637,6 +1678,7 @@ with check (true);</div>
 
   function getDefaultState() {
     return {
+      lastActiveDate: getLocalDateKey(),
       funnel: {
         calls: 0,
         demos: 0,
@@ -1650,32 +1692,187 @@ with check (true);</div>
           id: 't1',
           text: 'Перезаписать демо-видео бота VIBE без музыки и с актуальными датами',
           tag: 'Срочно',
-          done: false
+          done: false,
+          createdDate: getLocalDateKey(),
+          isOverdue: false
         },
         {
           id: 't2',
           text: 'Поговорить с партнером (правила 50/50 + делим базу 200 контактов)',
           tag: 'Срочно',
-          done: false
+          done: false,
+          createdDate: getLocalDateKey(),
+          isOverdue: false
         },
         {
           id: 't3',
           text: 'Оформить самозанятость в приложении «Мой налог»',
           tag: 'База',
-          done: false
+          done: false,
+          createdDate: getLocalDateKey(),
+          isOverdue: false
         },
         {
           id: 't4',
           text: 'Сделать 15 звонков по холодной базе 2ГИС по скрипту',
           tag: 'Продажи',
-          done: false
+          done: false,
+          createdDate: getLocalDateKey(),
+          isOverdue: false
         }
       ],
+      completedHistory: [],
       dealShare: 1,
       deals: [],
       roadmap: getDefaultRoadmap(),
       updatedAt: 0
     };
+  }
+
+  function getLocalDateKey(dateObj = new Date()) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function formatShortDateFromKey(dateKey) {
+    if (!dateKey || !dateKey.includes('-')) return '';
+    const parts = dateKey.split('-');
+    return `${parts[2]}.${parts[1]}`;
+  }
+
+  function formatReadableToday() {
+    const now = new Date();
+    const str = now.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' });
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function recordCompletedTaskToHistory(task) {
+    if (!Array.isArray(state.completedHistory)) state.completedHistory = [];
+    const alreadySaved = state.completedHistory.some(h => h.sourceTaskId === task.id);
+    if (alreadySaved) return;
+
+    const now = new Date();
+    const completedAt = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) +
+      ' ' + now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+    state.completedHistory.unshift({
+      id: 'done_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      sourceTaskId: task.id,
+      text: task.text,
+      tag: task.tag || 'Продажи',
+      completedDate: getLocalDateKey(now),
+      completedAt: completedAt
+    });
+  }
+
+  // Автоматическое обновление дня при наступлении новой даты
+  function checkAndRolloverDay(shouldSave = true) {
+    const todayKey = getLocalDateKey();
+    if (!state.lastActiveDate) {
+      state.lastActiveDate = todayKey;
+      return false;
+    }
+
+    let changed = false;
+
+    // 1. Все невыполненные задачи прошлых дней висят в списке и принудительно помечаются как "Срочно"
+    state.tasks.forEach(t => {
+      if (!t.createdDate) t.createdDate = state.lastActiveDate;
+      if (!t.done && t.createdDate < todayKey) {
+        if (t.tag !== 'Срочно' || !t.isOverdue) {
+          t.tag = 'Срочно';
+          t.isOverdue = true;
+          changed = true;
+        }
+      }
+    });
+
+    if (state.lastActiveDate !== todayKey) {
+      // 2. Вчерашние выполненные задачи переносим в постоянный архив БД и убираем из активного списка дня
+      state.tasks.forEach(t => {
+        if (t.done) recordCompletedTaskToHistory(t);
+      });
+
+      const carriedOverTasks = state.tasks
+        .filter(t => !t.done)
+        .map(t => ({
+          ...t,
+          tag: 'Срочно',
+          isOverdue: true
+        }));
+
+      state.lastActiveDate = todayKey;
+      state.funnel.dailyTouches = 0;
+      state.tasks = carriedOverTasks;
+
+      const hasDailyCallTask = state.tasks.some(t => t.text.includes('15 звонков') || t.text.includes('15 холодных звонков'));
+      if (!hasDailyCallTask && state.funnel.calls < BASE_TOTAL) {
+        state.tasks.push({
+          id: 'daily_calls_' + todayKey,
+          text: 'Сделать 15 холодных звонков по базе 2ГИС и кинуть демо в TG/WA',
+          tag: 'Продажи',
+          done: false,
+          createdDate: todayKey,
+          isOverdue: false
+        });
+      }
+
+      changed = true;
+      if (shouldSave) {
+        saveState();
+        const urgentCount = carriedOverTasks.length;
+        showToast(urgentCount > 0
+          ? `Новый день: ${urgentCount} невыполн. задач помечены как Срочно!`
+          : 'Наступил новый день: дневной лимит 0/15 обновлён!');
+      }
+    } else if (changed && shouldSave) {
+      saveState();
+    }
+
+    return changed;
+  }
+
+  function pullTodayPlanTasks() {
+    const dayMap = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    const todayShort = dayMap[new Date().getDay()];
+    const todayKey = getLocalDateKey();
+    const existingTexts = new Set(state.tasks.map(t => t.text.trim().toLowerCase()));
+    let added = 0;
+
+    state.roadmap.forEach(stage => {
+      stage.items.forEach(item => {
+        if (item.done) return;
+        const dayLabel = item.day || '';
+        const matchesDay = dayLabel.includes(todayShort) ||
+          (todayShort === 'Чт' && dayLabel.includes('Чт–Пт')) ||
+          (todayShort === 'Пт' && (dayLabel.includes('Чт–Пт') || dayLabel.includes('Пт–Сб') || dayLabel.includes('Пт–Вс'))) ||
+          (todayShort === 'Сб' && (dayLabel.includes('Пт–Сб') || dayLabel.includes('Сб–Вс') || dayLabel.includes('Пт–Вс'))) ||
+          (todayShort === 'Вс' && (dayLabel.includes('Сб–Вс') || dayLabel.includes('Пт–Вс')));
+
+        if (matchesDay && !existingTexts.has(item.text.trim().toLowerCase())) {
+          state.tasks.unshift({
+            id: 'plan_' + item.id + '_' + Date.now(),
+            text: item.text,
+            tag: 'Срочно',
+            done: false,
+            createdDate: todayKey,
+            isOverdue: false
+          });
+          existingTexts.add(item.text.trim().toLowerCase());
+          added++;
+        }
+      });
+    });
+
+    if (added > 0) {
+      saveState();
+      renderTasks();
+      showToast(`Добавлено задач из плана на ${todayShort}: ${added}`);
+    } else {
+      showToast(`Все задачи на ${todayShort} уже в списке`);
+    }
   }
 
   let state = loadState();
@@ -1806,7 +2003,9 @@ with check (true);</div>
 
       if (!res.ok) {
         const errText = await res.text().catch(() => '');
-        throw new Error(`HTTP ${res.status} ${errText}`);
+        let detail = '';
+        try { detail = JSON.parse(errText).message || ''; } catch (e) { detail = errText; }
+        throw new Error(`HTTP ${res.status}: ${detail}`);
       }
       const rows = await res.json();
       isCloudConnected = true;
@@ -1824,8 +2023,10 @@ with check (true);</div>
             funnel: { ...base.funnel, ...(remoteData.funnel || {}) },
             roadmap: Array.isArray(remoteData.roadmap) && remoteData.roadmap.length ? remoteData.roadmap : base.roadmap,
             tasks: Array.isArray(remoteData.tasks) ? remoteData.tasks : base.tasks,
+            completedHistory: Array.isArray(remoteData.completedHistory) ? remoteData.completedHistory : [],
             deals: Array.isArray(remoteData.deals) ? remoteData.deals : []
           };
+          checkAndRolloverDay(false);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
           renderAll();
           if (!silent) showToast('Данные загружены из Supabase!');
@@ -1842,9 +2043,9 @@ with check (true);</div>
     } catch (err) {
       isCloudConnected = false;
       const msg = String(err.message || '');
-      const shortErr = msg.includes('401') ? 'Ошибка 401 (Ключ/RLS)' : (msg.includes('404') ? 'Ошибка 404 (Нет таблицы)' : 'Ошибка БД');
+      const shortErr = msg.includes('Invalid API key') ? 'Неверный ключ' : (msg.includes('401') ? 'Ошибка 401 (Ключ/RLS)' : (msg.includes('404') ? 'Нет таблицы (SQL)' : 'Ошибка БД'));
       setCloudBadge('error', shortErr);
-      if (!silent) showToast(shortErr + ' — проверь вкладку Бэкап');
+      if (!silent) showToast(msg.slice(0, 70) || shortErr);
       return false;
     }
   }
@@ -1940,6 +2141,7 @@ with check (true);</div>
         funnel: { ...base.funnel, ...(parsed.funnel || {}) },
         roadmap: Array.isArray(parsed.roadmap) && parsed.roadmap.length ? parsed.roadmap : base.roadmap,
         tasks: Array.isArray(parsed.tasks) ? parsed.tasks : base.tasks,
+        completedHistory: Array.isArray(parsed.completedHistory) ? parsed.completedHistory : [],
         deals: Array.isArray(parsed.deals) ? parsed.deals : []
       };
     } catch (e) {
@@ -2058,12 +2260,41 @@ with check (true);</div>
       id: 'task_' + Date.now(),
       text: text,
       tag: state.selectedTag || 'Продажи',
-      done: false
+      done: false,
+      createdDate: getLocalDateKey(),
+      isOverdue: false
     });
     input.value = '';
     saveState();
     renderTasks();
     showToast('Задача добавлена');
+  }
+
+  function toggleTask(id) {
+    const task = state.tasks.find(t => t.id === id);
+    if (!task) return;
+    task.done = !task.done;
+    if (task.done) {
+      recordCompletedTaskToHistory(task);
+    } else if (Array.isArray(state.completedHistory)) {
+      state.completedHistory = state.completedHistory.filter(h => h.sourceTaskId !== task.id);
+    }
+    saveState();
+    renderTasks();
+  }
+
+  function deleteTask(id) {
+    state.tasks = state.tasks.filter(t => t.id !== id);
+    saveState();
+    renderTasks();
+  }
+
+  function deleteHistoryItem(historyId) {
+    if (!Array.isArray(state.completedHistory)) return;
+    state.completedHistory = state.completedHistory.filter(h => h.id !== historyId);
+    saveState();
+    renderTasks();
+    showToast('Запись из архива удалена');
   }
 
   function toggleTask(id) {
@@ -2121,121 +2352,67 @@ with check (true);</div>
   }
 
   function renderTasks() {
+    const dateSub = document.getElementById('todayDateSubtitle');
+    if (dateSub) dateSub.textContent = formatReadableToday();
     const container = document.getElementById('taskListContainer');
     const doneCount = state.tasks.filter(t => t.done).length;
     document.getElementById('tasksCounterBadge').textContent = `${doneCount} / ${state.tasks.length}`;
 
-    if (state.tasks.length === 0) {
-      container.innerHTML = `<div style="text-align:center; color: var(--text-secondary); padding: 14px; font-size: 13px;">Список пуст. Добавь задачу выше.</div>`;
-      return;
-    }
+    // Сортируем: сначала невыполненные срочные/просроченные, затем остальные активные, внизу выполненные за сегодня
+    const sortedTasks = [...state.tasks].sort((a, b) => {
+      if (a.done !== b.done) return a.done ? 1 : -1;
+      if (Boolean(a.isOverdue) !== Boolean(b.isOverdue)) return a.isOverdue ? -1 : 1;
+      if ((a.tag === 'Срочно') !== (b.tag === 'Срочно')) return a.tag === 'Срочно' ? -1 : 1;
+      return 0;
+    });
 
-    container.innerHTML = state.tasks.map(t => `
-      <div class="task-item ${t.done ? 'done' : ''}">
-        <button type="button" class="checkbox-btn" onclick="toggleTask('${t.id}')" aria-label="Выполнить">
-          ${t.done ? '✓' : ''}
-        </button>
-        <div class="task-body" onclick="toggleTask('${t.id}')">
-          <div class="task-text">${escapeHtml(t.text)}</div>
-          <div class="task-meta">
-            <span class="priority-badge prio-${escapeHtml(t.tag)}">${escapeHtml(t.tag)}</span>
+    if (sortedTasks.length === 0) {
+      container.innerHTML = `<div style="text-align:center; color: var(--text-secondary); padding: 14px; font-size: 13px;">Список на сегодня пуст. Добавь задачу выше или нажми «Из плана».</div>`;
+    } else {
+      container.innerHTML = sortedTasks.map(t => `
+        <div class="task-item ${t.done ? 'done' : ''} ${(!t.done && t.isOverdue) ? 'overdue-urgent' : ''}">
+          <button type="button" class="checkbox-btn" onclick="toggleTask('${t.id}')" aria-label="Выполнить">
+            ${t.done ? '✓' : ''}
+          </button>
+          <div class="task-body" onclick="toggleTask('${t.id}')">
+            <div class="task-text">${escapeHtml(t.text)}</div>
+            <div class="task-meta">
+              <span class="priority-badge prio-${escapeHtml(t.tag)}">${escapeHtml(t.tag)}</span>
+              ${(!t.done && t.isOverdue && t.createdDate) ? `<span class="overdue-pill">Висит с ${formatShortDateFromKey(t.createdDate)}</span>` : ''}
+            </div>
           </div>
+          <button type="button" class="mini-icon-btn" onclick="openEditModal('task', '${t.id}')" aria-label="Редактировать">✎</button>
+          <button type="button" class="delete-icon-btn" onclick="deleteTask('${t.id}')" aria-label="Удалить">✕</button>
         </div>
-        <button type="button" class="mini-icon-btn" onclick="openEditModal('task', '${t.id}')" aria-label="Редактировать">✎</button>
-        <button type="button" class="delete-icon-btn" onclick="deleteTask('${t.id}')" aria-label="Удалить">✕</button>
-      </div>
-    `).join('');
-  }
-
-  // ==================== ФИНАНСЫ И ДОЛГ ====================
-  function setDealShare(share) {
-    state.dealShare = share;
-    saveState();
-    renderDebtSection();
-  }
-
-  function addDeal(title, fullPrice) {
-    const netAmount = Math.round(fullPrice * state.dealShare);
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
-
-    state.deals.unshift({
-      id: 'deal_' + Date.now(),
-      title: title,
-      fullPrice: fullPrice,
-      share: state.dealShare,
-      netAmount: netAmount,
-      date: dateStr
-    });
-    saveState();
-    renderDebtSection();
-    showToast(`+${formatRub(netAmount)} в закрытие долга!`);
-  }
-
-  function addCustomDeal() {
-    const input = document.getElementById('customDealInput');
-    const val = parseFloat(input.value);
-    if (!val || val <= 0) {
-      showToast('Введите сумму');
-      return;
-    }
-    addDeal('Поступление (КЦ / Своя)', val);
-    input.value = '';
-  }
-
-  function deleteDeal(id) {
-    state.deals = state.deals.filter(d => d.id !== id);
-    saveState();
-    renderDebtSection();
-    showToast('Запись удалена');
-  }
-
-  function renderDebtSection() {
-    document.getElementById('split100Btn').classList.toggle('active', state.dealShare === 1);
-    document.getElementById('split50Btn').classList.toggle('active', state.dealShare === 0.5);
-
-    document.querySelectorAll('.deal-btn-price').forEach(el => {
-      const base = Number(el.getAttribute('data-base'));
-      const actual = Math.round(base * state.dealShare);
-      el.textContent = state.dealShare === 1
-        ? formatRub(base)
-        : `${formatRub(actual)} (из ${base.toLocaleString('ru-RU')})`;
-    });
-
-    const paid = state.deals.reduce((sum, d) => sum + d.netAmount, 0);
-    const left = Math.max(0, DEBT_GOAL - paid);
-    const pct = Math.min(100, Math.round((paid / DEBT_GOAL) * 100));
-
-    // Обновление шапки и вкладки
-    document.getElementById('headerDebtPaid').textContent = `${formatRub(paid)} (${pct}%)`;
-    document.getElementById('headerDebtLeft').textContent = formatRub(left);
-    document.getElementById('headerDebtBar').style.width = pct + '%';
-
-    document.getElementById('debtPaidText').textContent = `${formatRub(paid)} / ${formatRub(DEBT_GOAL)}`;
-    document.getElementById('debtLeftText').textContent = formatRub(left);
-    document.getElementById('debtPercentBadge').textContent = pct + '%';
-    document.getElementById('debtProgressBar').style.width = pct + '%';
-
-    const listEl = document.getElementById('dealsHistoryList');
-    if (state.deals.length === 0) {
-      listEl.innerHTML = `<div style="font-size:12.5px; color:var(--text-muted); padding: 8px 0;">Пока нет поступлений. Нажми на тариф выше после оплаты или введи доход с КЦ.</div>`;
-      return;
+      `).join('');
     }
 
-    listEl.innerHTML = state.deals.map(d => `
-      <div class="history-item">
-        <div class="history-info">
-          <span class="history-title">${escapeHtml(d.title)} (${d.share === 1 ? '100%' : '50/50'})</span>
-          <span class="history-sub">${d.date} • Общая сумма: ${formatRub(d.fullPrice)}</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:6px;">
-          <span class="history-sum">+${formatRub(d.netAmount)}</span>
-          <button type="button" class="delete-icon-btn" onclick="deleteDeal('${d.id}')" aria-label="Удалить">✕</button>
-        </div>
-      </div>
-    `).join('');
-  }
+    // Рендер архива выполненных задач, сохраняемых в БД
+    const history = Array.isArray(state.completedHistory) ? state.completedHistory : [];
+    const countBadge = document.getElementById('completedHistoryCount');
+    const historyListEl = document.getElementById('completedHistoryList');
+    if (countBadge) countBadge.textContent = history.length;
 
+    if (historyListEl) {
+      if (history.length === 0) {
+        historyListEl.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); padding: 6px 0;">Здесь будут накапливаться все закрытые задачи по дням (сохраняются в Supabase).</div>`;
+      } else {
+        historyListEl.innerHTML = history.map(h => `
+          <div class="task-item done" style="padding: 9px 11px;">
+            <div class="checkbox-btn" style="width: 20px; height: 20px; min-width: 20px; font-size: 11px; cursor: default;">✓</div>
+            <div class="task-body">
+              <div class="task-text" style="font-size: 13px;">${escapeHtml(h.text)}</div>
+              <div class="task-meta">
+                <span class="priority-badge prio-${escapeHtml(h.tag)}">${escapeHtml(h.tag)}</span>
+                <span style="font-size: 11px; color: var(--text-secondary);">Закрыто: ${escapeHtml(h.completedAt || formatShortDateFromKey(h.completedDate))}</span>
+              </div>
+            </div>
+            <button type="button" class="delete-icon-btn" onclick="deleteHistoryItem('${h.id}')" aria-label="Удалить из архива">✕</button>
+          </div>
+        `).join('');
+      }
+    }
+  }
   // ==================== КАЛЕНДАРНЫЙ ПЛАН ДО 31 ДЕКАБРЯ ====================
   function toggleCheckpoint(stageId, itemId) {
     const stage = state.roadmap.find(s => s.id === stageId);
@@ -2243,89 +2420,24 @@ with check (true);</div>
     const item = stage.items.find(i => i.id === itemId);
     if (!item) return;
     item.done = !item.done;
-    saveState();
-    renderRoadmap();
-  }
-
-  function addRoadmapItem(stageId) {
-    const input = document.getElementById('add_stage_' + stageId);
-    if (!input) return;
-    const text = input.value.trim();
-    if (!text) return;
-
-    const stage = state.roadmap.find(s => s.id === stageId);
-    if (!stage) return;
-
-    stage.items.push({
-      id: stageId + '_custom_' + Date.now(),
-      day: 'Доп.',
-      text: text,
-      done: false
-    });
-    input.value = '';
-    saveState();
-    renderRoadmap();
-    showToast('Шаг добавлен в неделю');
-  }
-
-  function deleteRoadmapItem(stageId, itemId) {
-    const stage = state.roadmap.find(s => s.id === stageId);
-    if (!stage) return;
-    stage.items = stage.items.filter(i => i.id !== itemId);
-    saveState();
-    renderRoadmap();
-    showToast('Пункт удален');
-  }
-
-  function renderRoadmap() {
-    const container = document.getElementById('roadmapContainer');
-    let totalItems = 0;
-    let doneItems = 0;
-
-    state.roadmap.forEach(s => {
-      s.items.forEach(i => {
-        totalItems++;
-        if (i.done) doneItems++;
+    if (item.done) {
+      recordCompletedTaskToHistory({
+        id: 'roadmap_' + item.id,
+        text: `[План] ${item.text}`,
+        tag: 'База'
       });
-    });
-
-    document.getElementById('roadmapProgressBadge').textContent = `${doneItems} / ${totalItems}`;
-
-    container.innerHTML = state.roadmap.map((stage, idx) => `
-      <div class="stage-card ${idx === 0 ? 'current-week' : ''}">
-        <div class="stage-header">
-          <span class="stage-name">${escapeHtml(stage.title)}</span>
-          <span class="stage-date">${escapeHtml(stage.dates)}</span>
-        </div>
-        ${stage.scheduleHint ? `<div class="stage-schedule-hint">${escapeHtml(stage.scheduleHint)}</div>` : ''}
-        <div>
-          ${stage.items.map(item => `
-            <div class="checkpoint-row ${item.done ? 'done' : ''}">
-              <button type="button" class="checkbox-btn" style="width:20px; height:20px; min-width:20px; font-size:12px;" onclick="toggleCheckpoint('${stage.id}', '${item.id}')">
-                ${item.done ? '✓' : ''}
-              </button>
-              <div class="checkpoint-text-wrap" onclick="toggleCheckpoint('${stage.id}', '${item.id}')">
-                ${item.day ? `<span class="checkpoint-day-pill">${escapeHtml(item.day)}</span>` : ''}
-                <span class="checkpoint-label" style="font-size:13px; line-height:1.35;">${escapeHtml(item.text)}</span>
-              </div>
-              <button type="button" class="mini-icon-btn" onclick="openEditModal('roadmap', '${item.id}', '${stage.id}')" aria-label="Редактировать">✎</button>
-              <button type="button" class="mini-icon-btn" onclick="deleteRoadmapItem('${stage.id}', '${item.id}')" aria-label="Удалить">✕</button>
-            </div>
-          `).join('')}
-        </div>
-        <div class="stage-add-row">
-          <input type="text" id="add_stage_${stage.id}" class="stage-add-input" placeholder="+ Добавить задачу в эту неделю..." onkeydown="if(event.key==='Enter'){event.preventDefault();addRoadmapItem('${stage.id}');}" />
-          <button type="button" class="btn btn-sm btn-gold-soft" onclick="addRoadmapItem('${stage.id}')">+</button>
-        </div>
-      </div>
-    `).join('');
+    } else if (Array.isArray(state.completedHistory)) {
+      state.completedHistory = state.completedHistory.filter(h => h.sourceTaskId !== 'roadmap_' + item.id);
+    }
+    saveState();
+    renderRoadmap();
+    renderTasks();
   }
-
-  // ==================== СИНХРОНИЗАЦИЯ И SMART MERGE ====================
   function refreshExportBox() {
     const box = document.getElementById('exportProgressBox');
     if (!box) return;
     const paid = state.deals.reduce((sum, d) => sum + d.netAmount, 0);
+    const historyCount = Array.isArray(state.completedHistory) ? state.completedHistory.length : 0;
     const snapshot = {
       exportedAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
       summary: {
@@ -2333,64 +2445,18 @@ with check (true);</div>
         demosSent: state.funnel.demos,
         leads: state.funnel.leads,
         closedOrders: state.funnel.closed,
-        debtPaid: `${paid}/${DEBT_GOAL}`
+        debtPaid: `${paid}/${DEBT_GOAL}`,
+        completedTasksTotal: historyCount
       },
       funnel: state.funnel,
       dealShare: state.dealShare,
       deals: state.deals,
       tasks: state.tasks,
+      completedHistory: state.completedHistory || [],
       roadmap: state.roadmap
     };
     box.value = JSON.stringify(snapshot, null, 2);
   }
-
-  function copyProgressSnapshot() {
-    refreshExportBox();
-    copyTextById('exportProgressBox', 'Код прогресса скопирован — отправь в чат!');
-  }
-
-  function downloadBackupFile() {
-    refreshExportBox();
-    const content = document.getElementById('exportProgressBox').value;
-    const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mani_digital_progress_${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('Файл .JSON скачан');
-  }
-
-  async function pasteFromClipboardToImport() {
-    try {
-      if (navigator.clipboard && navigator.clipboard.readText) {
-        const text = await navigator.clipboard.readText();
-        document.getElementById('importPlanInput').value = text;
-        showToast('Вставлено из буфера');
-      } else {
-        showToast('Вставь текст вручную в поле выше');
-      }
-    } catch (e) {
-      showToast('Вставь текст вручную в поле выше');
-    }
-  }
-
-  // Умное слияние нового плана от ассистента БЕЗ ПОТЕРИ ПРОГРЕССА
-  function applySmartPlanUpdate() {
-    const raw = document.getElementById('importPlanInput').value.trim();
-    if (!raw) {
-      showToast('Вставь JSON нового плана в поле выше');
-      return;
-    }
-
-    try {
-      const incoming = JSON.parse(raw);
-      if (!incoming || typeof incoming !== 'object') {
-        throw new Error('Неверный формат объекта');
-      }
 
       // 1. Собираем карту уже выполненных пунктов по id и по тексту, чтобы не потерять прогресс
       const doneRoadmapIds = new Set();
@@ -2534,14 +2600,18 @@ with check (true);</div>
 
   // Инициализация при загрузке + автосинхронизация с Supabase
   (async function bootstrapApp() {
+    checkAndRolloverDay(false);
     fillSupabaseInputs();
     renderAll();
     await initVercelSupabaseEnv();
     await pullFromSupabase(true);
+    checkAndRolloverDay(true);
   })();
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
+      checkAndRolloverDay(true);
+      renderAll();
       pullFromSupabase(true);
     }
   });
