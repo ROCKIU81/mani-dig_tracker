@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>mani.digital — План до 31 декабря</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -1885,38 +1886,6 @@ with check (true);</div>
     }
   }
 
-  async function pushToSupabase(silent = true) {
-    const cfg = loadSupabaseConfig();
-    if (!cfg.url || !cfg.key) return false;
-
-    setCloudBadge('syncing', 'Сохранение...');
-    try {
-      const endpoint = `${cfg.url}/rest/v1/tracker_state?on_conflict=id`;
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: buildSupabaseHeaders(cfg.key, {
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates,return=minimal'
-        }),
-        body: JSON.stringify({
-          id: cfg.profileId,
-          data: state,
-          updated_at: new Date().toISOString()
-        })
-      });
-
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      isCloudConnected = true;
-      setCloudBadge('online', 'Supabase • Онлайн');
-      if (!silent) showToast('Сохранено в облако Supabase');
-      return true;
-    } catch (err) {
-      setCloudBadge('error', 'Ошибка БД');
-      if (!silent) showToast('Не удалось отправить в Supabase');
-      return false;
-    }
-  }
-
   function scheduleCloudSync() {
     const cfg = loadSupabaseConfig();
     if (!cfg.url || !cfg.key) return;
@@ -1933,6 +1902,10 @@ with check (true);</div>
 
     if (!url || !key) {
       showToast('Заполни Project URL и Publishable key');
+      return;
+    }
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key)) {
+      showToast('Это UUID, скопируй сам ключ (sb_publishable_... или eyJ...)');
       return;
     }
 
