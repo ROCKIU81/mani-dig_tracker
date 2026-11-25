@@ -60,19 +60,23 @@
       position: relative;
     }
 
-    /* Шапка */
+    /* Шапка и глобальный прогресс долга */
     .app-header {
       position: sticky;
       top: 0;
       z-index: 30;
-      background: rgba(11, 11, 12, 0.92);
+      background: rgba(11, 11, 12, 0.94);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
-      padding: 14px 16px;
+      padding: 12px 14px;
+    }
+
+    .header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
     }
 
     .brand-block {
@@ -81,7 +85,7 @@
     }
 
     .brand-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
       letter-spacing: -0.02em;
       color: var(--text-primary);
@@ -92,20 +96,75 @@
     }
 
     .brand-sub {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text-secondary);
       margin-top: 1px;
     }
 
     .countdown-pill {
       background: var(--accent-gold-dim);
-      border: 1px solid rgba(229, 169, 59, 0.35);
+      border: 1px solid rgba(245, 184, 46, 0.35);
       color: var(--accent-gold);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
-      padding: 6px 10px;
+      padding: 5px 10px;
       border-radius: 999px;
       white-space: nowrap;
+    }
+
+    .header-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sync-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .sync-pill.online {
+      background: var(--accent-green-dim);
+      border-color: rgba(34, 197, 94, 0.35);
+      color: var(--accent-green);
+    }
+
+    .sync-pill.syncing {
+      background: var(--accent-blue-dim);
+      border-color: rgba(59, 130, 246, 0.35);
+      color: var(--accent-blue);
+    }
+
+    .sync-pill.error {
+      background: var(--accent-red-dim);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: var(--accent-red);
+    }
+
+    .header-debt-strip {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(38, 38, 41, 0.7);
+    }
+
+    .header-debt-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .header-debt-meta strong {
+      color: var(--accent-green);
+      font-weight: 700;
     }
 
     /* Вкладки */
@@ -297,94 +356,6 @@
       border-color: var(--accent-gold);
     }
 
-    /* Шапка и глобальный прогресс долга */
-    .app-header {
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      background: rgba(11, 11, 12, 0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
-      padding: 12px 14px;
-    }
-
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .brand-block {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-title {
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text-primary);
-    }
-
-    .brand-title span {
-      color: var(--accent-gold);
-    }
-
-    .brand-sub {
-      font-size: 11.5px;
-      color: var(--text-secondary);
-      margin-top: 1px;
-    }
-
-    .countdown-pill {
-      background: var(--accent-gold-dim);
-      border: 1px solid rgba(245, 184, 46, 0.35);
-      color: var(--accent-gold);
-      font-size: 11.5px;
-      font-weight: 700;
-      padding: 5px 10px;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-
-    .header-pills {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .sync-pill {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 5px 9px;
-      border-radius: 999px;
-      border: 1px solid var(--border-color);
-      background: var(--bg-elevated);
-      color: var(--text-secondary);
-      white-space: nowrap;
-      cursor: pointer;
-    }
-
-    .sync-pill.online {
-      background: var(--accent-green-dim);
-      border-color: rgba(34, 197, 94, 0.35);
-      color: var(--accent-green);
-    }
-
-    .sync-pill.syncing {
-      background: var(--accent-blue-dim);
-      border-color: rgba(59, 130, 246, 0.35);
-      color: var(--accent-blue);
-    }
-
-    .sync-pill.error {
-      background: var(--accent-red-dim);
-      border-color: rgba(239, 68, 68, 0.35);
-      color: var(--accent-red);
-    }
-
     .sql-code-box {
       background: #0D0D0F;
       border: 1px solid var(--border-color);
@@ -397,25 +368,6 @@
       white-space: pre-wrap;
       word-break: break-all;
       margin: 8px 0;
-    }
-
-    .header-debt-strip {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(38, 38, 41, 0.7);
-    }
-
-    .header-debt-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11.5px;
-      color: var(--text-secondary);
-      margin-bottom: 5px;
-    }
-
-    .header-debt-meta strong {
-      color: var(--accent-green);
-      font-weight: 700;
     }
 
     /* Кнопки воронки холодки */
@@ -520,6 +472,7 @@
       color: var(--text-secondary);
       margin-top: 1px;
     }
+
     /* Дорожная карта по неделям до 31 декабря */
     .stage-card {
       background: var(--bg-elevated);
@@ -580,6 +533,11 @@
       flex: 1;
       min-width: 0;
       cursor: pointer;
+    }
+
+    .checkpoint-label {
+      font-size: 13.5px;
+      color: var(--text-primary);
     }
 
     .checkpoint-row.done .checkpoint-label {
@@ -725,10 +683,12 @@
       cursor: pointer;
       margin-top: 1px;
       color: #0B0B0C;
+      font-weight: 800;
       transition: all 0.15s ease;
     }
 
-    .task-item.done .checkbox-btn {
+    .task-item.done .checkbox-btn,
+    .checkpoint-row.done .checkbox-btn {
       background: var(--accent-green);
       border-color: var(--accent-green);
     }
@@ -736,6 +696,7 @@
     .task-body {
       flex: 1;
       min-width: 0;
+      cursor: pointer;
     }
 
     .task-text {
@@ -752,6 +713,7 @@
     .task-meta {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 6px;
       margin-top: 6px;
     }
@@ -926,50 +888,6 @@
       white-space: nowrap;
     }
 
-    /* Дорожная карта */
-    .stage-card {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-
-    .stage-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .stage-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--accent-gold);
-    }
-
-    .stage-date {
-      font-size: 11px;
-      color: var(--text-secondary);
-      background: var(--bg-card);
-      padding: 3px 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-    }
-
-    .checkpoint-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 6px 0;
-      cursor: pointer;
-    }
-
-    .checkpoint-row.done span {
-      text-decoration: line-through;
-      color: var(--text-secondary);
-    }
-
     /* Вкладка Шпаргалка */
     .accordion-item {
       background: var(--bg-card);
@@ -1032,16 +950,6 @@
       color: var(--accent-gold);
       margin-top: 10px;
       font-weight: 600;
-    }
-
-    /* Служебные кнопки внизу */
-    .footer-tools {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 18px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border-color);
     }
 
     /* Нижняя навигация на 4 вкладки */
@@ -1676,59 +1584,6 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     ];
   }
 
-  function getDefaultState() {
-    return {
-      lastActiveDate: getLocalDateKey(),
-      funnel: {
-        calls: 0,
-        demos: 0,
-        leads: 0,
-        closed: 0,
-        dailyTouches: 0
-      },
-      selectedTag: 'Срочно',
-      tasks: [
-        {
-          id: 't1',
-          text: 'Перезаписать демо-видео бота VIBE без музыки и с актуальными датами',
-          tag: 'Срочно',
-          done: false,
-          createdDate: getLocalDateKey(),
-          isOverdue: false
-        },
-        {
-          id: 't2',
-          text: 'Поговорить с партнером (правила 50/50 + делим базу 200 контактов)',
-          tag: 'Срочно',
-          done: false,
-          createdDate: getLocalDateKey(),
-          isOverdue: false
-        },
-        {
-          id: 't3',
-          text: 'Оформить самозанятость в приложении «Мой налог»',
-          tag: 'База',
-          done: false,
-          createdDate: getLocalDateKey(),
-          isOverdue: false
-        },
-        {
-          id: 't4',
-          text: 'Сделать 15 звонков по холодной базе 2ГИС по скрипту',
-          tag: 'Продажи',
-          done: false,
-          createdDate: getLocalDateKey(),
-          isOverdue: false
-        }
-      ],
-      completedHistory: [],
-      dealShare: 1,
-      deals: [],
-      roadmap: getDefaultRoadmap(),
-      updatedAt: 0
-    };
-  }
-
   function getLocalDateKey(dateObj = new Date()) {
     const y = dateObj.getFullYear();
     const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -1746,6 +1601,60 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     const now = new Date();
     const str = now.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' });
     return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function getDefaultState() {
+    const todayKey = getLocalDateKey();
+    return {
+      lastActiveDate: todayKey,
+      funnel: {
+        calls: 0,
+        demos: 0,
+        leads: 0,
+        closed: 0,
+        dailyTouches: 0
+      },
+      selectedTag: 'Срочно',
+      tasks: [
+        {
+          id: 't1',
+          text: 'Перезаписать демо-видео бота VIBE без музыки и с актуальными датами',
+          tag: 'Срочно',
+          done: false,
+          createdDate: todayKey,
+          isOverdue: false
+        },
+        {
+          id: 't2',
+          text: 'Поговорить с партнером (правила 50/50 + делим базу 200 контактов)',
+          tag: 'Срочно',
+          done: false,
+          createdDate: todayKey,
+          isOverdue: false
+        },
+        {
+          id: 't3',
+          text: 'Оформить самозанятость в приложении «Мой налог»',
+          tag: 'База',
+          done: false,
+          createdDate: todayKey,
+          isOverdue: false
+        },
+        {
+          id: 't4',
+          text: 'Сделать 15 звонков по холодной базе 2ГИС по скрипту',
+          tag: 'Продажи',
+          done: false,
+          createdDate: todayKey,
+          isOverdue: false
+        }
+      ],
+      completedHistory: [],
+      dealShare: 1,
+      deals: [],
+      roadmap: getDefaultRoadmap(),
+      updatedAt: 0
+    };
   }
 
   function recordCompletedTaskToHistory(task) {
@@ -1777,7 +1686,7 @@ grant all on table public.tracker_state to anon, authenticated;</div>
 
     let changed = false;
 
-    // 1. Все невыполненные задачи прошлых дней висят в списке и принудительно помечаются как "Срочно"
+    // 1. Невыполненные задачи прошлых дней висят в списке и принудительно помечаются как "Срочно"
     state.tasks.forEach(t => {
       if (!t.createdDate) t.createdDate = state.lastActiveDate;
       if (!t.done && t.createdDate < todayKey) {
@@ -1876,7 +1785,7 @@ grant all on table public.tracker_state to anon, authenticated;</div>
   }
 
   let state = loadState();
-  let editingTarget = null; // { type: 'task' | 'roadmap', stageId?, id }
+  let editingTarget = null;
   let vercelEnvConfig = null;
 
   function normalizeSupabaseUrl(rawUrl) {
@@ -1946,7 +1855,7 @@ grant all on table public.tracker_state to anon, authenticated;</div>
         fillSupabaseInputs();
       }
     } catch (e) {
-      // Локальный запуск без Vercel API — работаем через localStorage или ручной ввод
+      // Локальный запуск без Vercel API
     }
   }
 
@@ -2218,7 +2127,6 @@ grant all on table public.tracker_state to anon, authenticated;</div>
 
   function renderFunnel() {
     const { calls, demos, leads, closed, dailyTouches } = state.funnel;
-    const cappedCalls = Math.min(BASE_TOTAL, calls);
     const left = Math.max(0, BASE_TOTAL - calls);
     const pct = Math.min(100, Math.round((calls / BASE_TOTAL) * 100));
     const daysLeft = getDaysUntilNewYear();
@@ -2297,20 +2205,6 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     showToast('Запись из архива удалена');
   }
 
-  function toggleTask(id) {
-    const task = state.tasks.find(t => t.id === id);
-    if (!task) return;
-    task.done = !task.done;
-    saveState();
-    renderTasks();
-  }
-
-  function deleteTask(id) {
-    state.tasks = state.tasks.filter(t => t.id !== id);
-    saveState();
-    renderTasks();
-  }
-
   function openEditModal(type, id, stageId = null) {
     editingTarget = { type, id, stageId };
     let currentText = '';
@@ -2358,7 +2252,6 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     const doneCount = state.tasks.filter(t => t.done).length;
     document.getElementById('tasksCounterBadge').textContent = `${doneCount} / ${state.tasks.length}`;
 
-    // Сортируем: сначала невыполненные срочные/просроченные, затем остальные активные, внизу выполненные за сегодня
     const sortedTasks = [...state.tasks].sort((a, b) => {
       if (a.done !== b.done) return a.done ? 1 : -1;
       if (Boolean(a.isOverdue) !== Boolean(b.isOverdue)) return a.isOverdue ? -1 : 1;
@@ -2387,7 +2280,6 @@ grant all on table public.tracker_state to anon, authenticated;</div>
       `).join('');
     }
 
-    // Рендер архива выполненных задач, сохраняемых в БД
     const history = Array.isArray(state.completedHistory) ? state.completedHistory : [];
     const countBadge = document.getElementById('completedHistoryCount');
     const historyListEl = document.getElementById('completedHistoryList');
@@ -2413,6 +2305,93 @@ grant all on table public.tracker_state to anon, authenticated;</div>
       }
     }
   }
+
+  // ==================== ФИНАНСЫ И ДОЛГ 50 000 ₽ ====================
+  function setDealShare(share) {
+    state.dealShare = share;
+    saveState();
+    renderDebtSection();
+  }
+
+  function addDeal(title, basePrice) {
+    const share = state.dealShare || 1;
+    const netAmount = Math.round(basePrice * share);
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+
+    state.deals.unshift({
+      id: 'deal_' + Date.now(),
+      title: title,
+      basePrice: basePrice,
+      share: share,
+      netAmount: netAmount,
+      date: dateStr
+    });
+    saveState();
+    renderDebtSection();
+    showToast(`+${formatRub(netAmount)} в счет долга!`);
+  }
+
+  function addCustomDeal() {
+    const input = document.getElementById('customDealInput');
+    const val = Number(input.value);
+    if (!val || val <= 0) {
+      showToast('Введи сумму больше 0');
+      return;
+    }
+    addDeal('Поступление (КЦ / Своя сумма)', val);
+    input.value = '';
+  }
+
+  function deleteDeal(id) {
+    state.deals = state.deals.filter(d => d.id !== id);
+    saveState();
+    renderDebtSection();
+    showToast('Запись удалена');
+  }
+
+  function renderDebtSection() {
+    const share = state.dealShare || 1;
+    document.getElementById('split100Btn').classList.toggle('active', share === 1);
+    document.getElementById('split50Btn').classList.toggle('active', share === 0.5);
+
+    document.querySelectorAll('.deal-btn-price[data-base]').forEach(el => {
+      const base = Number(el.getAttribute('data-base'));
+      el.textContent = formatRub(base * share);
+    });
+
+    const paid = state.deals.reduce((sum, d) => sum + (Number(d.netAmount) || 0), 0);
+    const left = Math.max(0, DEBT_GOAL - paid);
+    const pct = Math.min(100, Math.round((paid / DEBT_GOAL) * 100));
+
+    document.getElementById('headerDebtPaid').textContent = `${formatRub(paid)} (${pct}%)`;
+    document.getElementById('headerDebtLeft').textContent = formatRub(left);
+    document.getElementById('headerDebtBar').style.width = pct + '%';
+
+    document.getElementById('debtPercentBadge').textContent = pct + '%';
+    document.getElementById('debtPaidText').textContent = `${formatRub(paid)} / ${formatRub(DEBT_GOAL)}`;
+    document.getElementById('debtLeftText').textContent = formatRub(left);
+    document.getElementById('debtProgressBar').style.width = pct + '%';
+
+    const listEl = document.getElementById('dealsHistoryList');
+    if (state.deals.length === 0) {
+      listEl.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); padding: 6px 0;">Пока нет зафиксированных поступлений.</div>`;
+    } else {
+      listEl.innerHTML = state.deals.map(d => `
+        <div class="history-item">
+          <div class="history-info">
+            <span class="history-title">${escapeHtml(d.title)}</span>
+            <span class="history-sub">${escapeHtml(d.date)} • Доля ${Math.round((d.share || 1) * 100)}%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="history-sum">+${formatRub(d.netAmount)}</span>
+            <button type="button" class="delete-icon-btn" onclick="deleteDeal('${d.id}')" aria-label="Удалить">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
   // ==================== КАЛЕНДАРНЫЙ ПЛАН ДО 31 ДЕКАБРЯ ====================
   function toggleCheckpoint(stageId, itemId) {
     const stage = state.roadmap.find(s => s.id === stageId);
@@ -2433,10 +2412,83 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     renderRoadmap();
     renderTasks();
   }
+
+  function addStageItem(e, stageId) {
+    e.preventDefault();
+    const input = document.getElementById(`add_input_${stageId}`);
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+
+    const stage = state.roadmap.find(s => s.id === stageId);
+    if (!stage) return;
+    stage.items.push({
+      id: `${stageId}_${Date.now()}`,
+      day: 'Доп.',
+      text: text,
+      done: false
+    });
+    input.value = '';
+    saveState();
+    renderRoadmap();
+    showToast('Шаг добавлен в план');
+  }
+
+  function deleteStageItem(stageId, itemId) {
+    const stage = state.roadmap.find(s => s.id === stageId);
+    if (!stage) return;
+    stage.items = stage.items.filter(i => i.id !== itemId);
+    saveState();
+    renderRoadmap();
+  }
+
+  function renderRoadmap() {
+    const container = document.getElementById('roadmapContainer');
+    let totalItems = 0;
+    let doneItems = 0;
+
+    state.roadmap.forEach(s => {
+      totalItems += s.items.length;
+      doneItems += s.items.filter(i => i.done).length;
+    });
+
+    document.getElementById('roadmapProgressBadge').textContent = `${doneItems} / ${totalItems}`;
+
+    container.innerHTML = state.roadmap.map((stage, idx) => `
+      <div class="stage-card ${idx === 0 ? 'current-week' : ''}">
+        <div class="stage-header">
+          <div class="stage-name">${escapeHtml(stage.title)}</div>
+          <div class="stage-date">${escapeHtml(stage.dates)}</div>
+        </div>
+        ${stage.scheduleHint ? `<div class="stage-schedule-hint">${escapeHtml(stage.scheduleHint)}</div>` : ''}
+        <div>
+          ${stage.items.map(item => `
+            <div class="checkpoint-row ${item.done ? 'done' : ''}">
+              <button type="button" class="checkbox-btn" onclick="toggleCheckpoint('${stage.id}', '${item.id}')" aria-label="Выполнить">
+                ${item.done ? '✓' : ''}
+              </button>
+              <div class="checkpoint-text-wrap" onclick="toggleCheckpoint('${stage.id}', '${item.id}')">
+                ${item.day ? `<span class="checkpoint-day-pill">${escapeHtml(item.day)}</span>` : ''}
+                <span class="checkpoint-label">${escapeHtml(item.text)}</span>
+              </div>
+              <button type="button" class="mini-icon-btn" onclick="openEditModal('roadmap', '${item.id}', '${stage.id}')" aria-label="Редактировать">✎</button>
+              <button type="button" class="mini-icon-btn" onclick="deleteStageItem('${stage.id}', '${item.id}')" aria-label="Удалить">✕</button>
+            </div>
+          `).join('')}
+        </div>
+        <form class="stage-add-row" onsubmit="addStageItem(event, '${stage.id}')">
+          <input type="text" id="add_input_${stage.id}" class="stage-add-input" placeholder="Добавить задачу в эту неделю..." />
+          <button type="submit" class="btn btn-sm btn-gold-soft">+</button>
+        </form>
+      </div>
+    `).join('');
+  }
+
+  // ==================== БЭКАП И СИНХРОНИЗАЦИЯ ====================
   function refreshExportBox() {
     const box = document.getElementById('exportProgressBox');
     if (!box) return;
-    const paid = state.deals.reduce((sum, d) => sum + d.netAmount, 0);
+    const paid = state.deals.reduce((sum, d) => sum + (Number(d.netAmount) || 0), 0);
     const historyCount = Array.isArray(state.completedHistory) ? state.completedHistory.length : 0;
     const snapshot = {
       exportedAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
@@ -2457,6 +2509,49 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     };
     box.value = JSON.stringify(snapshot, null, 2);
   }
+
+  function copyProgressSnapshot() {
+    refreshExportBox();
+    copyTextById('exportProgressBox', 'Код прогресса скопирован!');
+  }
+
+  function downloadBackupFile() {
+    refreshExportBox();
+    const content = document.getElementById('exportProgressBox').value;
+    const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mani_digital_backup_${getLocalDateKey()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('JSON-бэкап скачан');
+  }
+
+  async function pasteFromClipboardToImport() {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        document.getElementById('importPlanInput').value = text;
+        showToast('Вставлено из буфера');
+      }
+    } catch (e) {
+      showToast('Нажми в поле и вставь вручную (Ctrl+V)');
+    }
+  }
+
+  function applySmartPlanUpdate() {
+    const raw = document.getElementById('importPlanInput').value.trim();
+    if (!raw) {
+      showToast('Вставь JSON в поле выше');
+      return;
+    }
+
+    try {
+      const incoming = JSON.parse(raw);
+      const todayKey = getLocalDateKey();
 
       // 1. Собираем карту уже выполненных пунктов по id и по тексту, чтобы не потерять прогресс
       const doneRoadmapIds = new Set();
@@ -2515,17 +2610,17 @@ grant all on table public.tracker_state to anon, authenticated;</div>
             id: tId,
             text: tText,
             tag: t.tag || 'Продажи',
-            done: wasDone
+            done: wasDone,
+            createdDate: t.createdDate || todayKey,
+            isOverdue: Boolean(t.isOverdue)
           };
         });
 
-        // Объединяем без дубликатов по тексту
         const seenTexts = new Set(incomingTasks.map(t => t.text.toLowerCase()));
         const uniqueOldDone = preservedDoneTasks.filter(t => !seenTexts.has(t.text.toLowerCase()));
         state.tasks = [...incomingTasks, ...uniqueOldDone];
       }
 
-      // 4. Счетчики воронки 200 (state.funnel), долг (state.deals) и доля (state.dealShare) остаются нетронутыми!
       saveState();
       renderAll();
       document.getElementById('importPlanInput').value = '';
