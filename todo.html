@@ -473,48 +473,69 @@
       margin-top: 1px;
     }
 
-    /* Дорожная карта по неделям до 31 декабря */
-    .stage-card {
+    /* Ежедневный план до 31 декабря */
+    .day-plan-card {
       background: var(--bg-elevated);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 12px;
-      margin-bottom: 12px;
+      padding: 11px 12px;
+      margin-bottom: 9px;
     }
 
-    .stage-card.current-week {
-      border-color: rgba(245, 184, 46, 0.45);
+    .day-plan-card.is-today {
+      border-color: var(--accent-gold);
+      background: linear-gradient(180deg, rgba(245, 184, 46, 0.09), var(--bg-elevated));
     }
 
-    .stage-header {
+    .day-plan-card.is-done-all {
+      border-color: rgba(34, 197, 94, 0.35);
+      opacity: 0.85;
+    }
+
+    .day-plan-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 8px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    .stage-name {
-      font-size: 14px;
-      font-weight: 700;
+    .day-plan-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .day-plan-card.is-today .day-plan-title {
       color: var(--accent-gold);
     }
 
-    .stage-schedule-hint {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-      line-height: 1.35;
+    .day-now-pill {
+      font-size: 10px;
+      font-weight: 800;
+      background: var(--accent-gold);
+      color: #0B0B0C;
+      padding: 2px 7px;
+      border-radius: 999px;
+      text-transform: uppercase;
     }
 
-    .stage-date {
+    .day-plan-meta {
       font-size: 11px;
       color: var(--text-secondary);
-      background: var(--bg-card);
-      padding: 3px 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      white-space: nowrap;
+      margin-bottom: 7px;
+      line-height: 1.3;
+    }
+
+    .day-filter-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 10px;
     }
 
     .checkpoint-row {
@@ -536,24 +557,13 @@
     }
 
     .checkpoint-label {
-      font-size: 13.5px;
+      font-size: 13px;
       color: var(--text-primary);
     }
 
     .checkpoint-row.done .checkpoint-label {
       text-decoration: line-through;
       color: var(--text-secondary);
-    }
-
-    .checkpoint-day-pill {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--accent-gold);
-      background: var(--accent-gold-dim);
-      padding: 1px 6px;
-      border-radius: 4px;
-      margin-right: 5px;
     }
 
     .mini-icon-btn {
@@ -1283,15 +1293,22 @@
       </div>
     </section>
 
-    <!-- Полный план по неделям до 31 декабря -->
+    <!-- Ежедневный план до 31 декабря -->
     <section class="card">
       <div class="card-header">
-        <div class="card-title">Календарный план до 31 дек</div>
+        <div class="card-title">План на каждый день до 31 дек</div>
         <span class="badge-gold" id="roadmapProgressBadge">0 / 0</span>
       </div>
-      <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
-        Отмечай шаги, редактируй текст (✎) или добавляй задачи внутрь любой недели. При обновлении плана через JSON выполненные галочки сохраняются.
+      <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+        Конкретные задачи по каждому календарному дню с учётом СГУПС и колл-центра. Можно фильтровать дни или нажать «Сегодня».
       </div>
+
+      <div class="day-filter-bar" id="dayPlanFilterBar">
+        <button type="button" class="tag-chip active" data-filter="today_onward" onclick="setDayPlanFilter('today_onward', this)">С сегодня до 31 дек</button>
+        <button type="button" class="tag-chip" data-filter="today_only" onclick="setDayPlanFilter('today_only', this)">Только сегодня</button>
+        <button type="button" class="tag-chip" data-filter="all" onclick="setDayPlanFilter('all', this)">Все дни (с 25 ноя)</button>
+      </div>
+
       <div id="roadmapContainer"></div>
     </section>
   </main>
@@ -1517,78 +1534,215 @@ grant all on table public.tracker_state to anon, authenticated;</div>
   const DAILY_NORM = 15;
   let cloudPushTimer = null;
   let isCloudConnected = false;
-
-  // Полный план до 31 декабря 2026 по неделям и расписанию СГУПС + КЦ
-  function getDefaultRoadmap() {
-    return [
-      {
-        id: 'w1',
-        title: 'Неделя 1: Старт и первые 50 звонков',
-        dates: '23 – 29 ноя',
-        scheduleHint: 'Вт (выходной), Ср (с 11:00), Пт/Сб (с 13:30) — окна под запуск и обзвон',
-        items: [
-          { id: 'w1_1', day: 'Вт 24 ноя', text: 'Перезаписать демо-видео бота VIBE без музыки и обновить даты слотов', done: false },
-          { id: 'w1_2', day: 'Вт 24 ноя', text: 'Договориться с партнером о правилах 50/50 и разделить базу 200 клиентов', done: false },
-          { id: 'w1_3', day: 'Вт 24 ноя', text: 'Оформить самозанятость в приложении «Мой налог» (5 минут)', done: false },
-          { id: 'w1_4', day: 'Ср 25 ноя', text: 'Сделать первые 15 холодных звонков по 2ГИС и кинуть демо в TG/WA', done: false },
-          { id: 'w1_5', day: 'Чт–Пт', text: 'Дойти до 35 прозвоненных контактов + дожать молчунов через 24 часа', done: false },
-          { id: 'w1_6', day: 'Сб–Вс', text: 'Закрыть отметку 50/200 по базе и взять первую предоплату 50%', done: false }
-        ]
-      },
-      {
-        id: 'w2',
-        title: 'Неделя 2: Разгон (50 → 105 контактов)',
-        dates: '30 ноя – 6 дек',
-        scheduleHint: 'Ежедневно 1,5 ч вечером на 15 звонков; Вт и Вс — сборка проданных ботов',
-        items: [
-          { id: 'w2_1', day: 'Пн–Вт', text: 'Развернуть первого проданного бота по шаблону VIBE и сдать заказчику', done: false },
-          { id: 'w2_2', day: 'Ср–Чт', text: 'Прозвонить еще 30 салонов/студий (итого 80/200) + рассылка демо', done: false },
-          { id: 'w2_3', day: 'Пт–Сб', text: 'Довести базу до 105/200 и сделать серию дожимов по всем открытым чатам', done: false },
-          { id: 'w2_4', day: 'Вс 6 дек', text: 'Сверить кассу: закрыть минимум 15 000 – 20 000 ₽ в счет долга', done: false }
-        ]
-      },
-      {
-        id: 'w3',
-        title: 'Неделя 3: Экватор и парсеры (105 → 155)',
-        dates: '7 – 13 дек',
-        scheduleHint: 'Упор на предновогодний ажиотаж в бьюти/авто + отклики на парсинг Python',
-        items: [
-          { id: 'w3_1', day: 'Пн–Вт', text: 'Запустить скрипт-заход «Разгрузите администратора перед новогодним потоком»', done: false },
-          { id: 'w3_2', day: 'Ср–Чт', text: 'Пройти контакты 105 → 135 и взять 1 заказ на парсер (6 000 – 12 000 ₽)', done: false },
-          { id: 'w3_3', day: 'Пт–Вс', text: 'Дойти до 155/200 по холодной базе + допродать поддержку 1 500 ₽/мес', done: false }
-        ]
-      },
-      {
-        id: 'w4',
-        title: 'Неделя 4: Дожим всей базы 200/200',
-        dates: '14 – 20 дек',
-        scheduleHint: 'Закрываем остаток базы 155 → 200 и собираем максимум предоплат до сессии',
-        items: [
-          { id: 'w4_1', day: 'Пн–Ср', text: 'Дозвонить последние 45 контактов из базы (финиш 200/200)', done: false },
-          { id: 'w4_2', day: 'Чт–Пт', text: 'Второй круг прозвона по тем, кто просил «перезвонить в середине декабря»', done: false },
-          { id: 'w4_3', day: 'Сб–Вс', text: 'Сборка всех оплаченных ботов и лендингов (оставить хвостов по минимуму)', done: false }
-        ]
-      },
-      {
-        id: 'w5',
-        title: 'Финишный спринт: Закрытие долга',
-        dates: '21 – 31 дек',
-        scheduleHint: 'Сдача проектов, сбор постоплат 50% и полное закрытие долга 50 000 ₽',
-        items: [
-          { id: 'w5_1', day: '21–25 дек', text: 'Завершить все разработки и перевести клиентов на предновогоднюю рассылку', done: false },
-          { id: 'w5_2', day: '26–28 дек', text: 'Собрать все вторые 50% постоплаты по завершенным заказам', done: false },
-          { id: 'w5_3', day: '29–30 дек', text: 'Свести доход с IT + зарплату колл-центра и полностью закрыть долг 50 000 ₽', done: false },
-          { id: 'w5_4', day: '31 дек', text: 'Выгрузить финальный JSON прогресса и зафиксировать план масштабирования на 2027', done: false }
-        ]
-      }
-    ];
-  }
+  let dayPlanFilter = 'today_onward';
 
   function getLocalDateKey(dateObj = new Date()) {
     const y = dateObj.getFullYear();
     const m = String(dateObj.getMonth() + 1).padStart(2, '0');
     const d = String(dateObj.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
+  }
+
+  // Генерация детального плана на каждый день с 25 ноября по 31 декабря 2026
+  function getDefaultRoadmap() {
+    const weekdayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    const monthNames = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+
+    const customDailyTasks = {
+      '2026-11-25': [
+        { text: 'Сделать первые 15 холодных звонков по 2ГИС (салоны/студии НСК) после пары', done: false },
+        { text: 'Отправить всем заинтересованным видео-демо бота + прайс в TG/WA', done: false },
+        { text: 'Проверить работу бота приёма заявок и подготовить шаблон под заказчика', done: false }
+      ],
+      '2026-11-26': [
+        { text: 'Сделать 12–15 звонков после учёбы (17:30–19:30) и отправить демо в мессенджеры', done: false },
+        { text: 'Дожать вчерашних лидов, которые посмотрели демо, но не ответили', done: false }
+      ],
+      '2026-11-27': [
+        { text: 'После пар (с 13:30) сделать 15 звонков по базе 2ГИС', done: false },
+        { text: 'Собрать 2–3 созвона/переписки по запуску бота записи или лендинга', done: false }
+      ],
+      '2026-11-28': [
+        { text: 'После пар (с 13:30) закрыть 15 звонков — довести базу до отметки ~50/200', done: false },
+        { text: 'Выставить счёт на предоплату 50% первым горячим клиентам', done: false }
+      ],
+      '2026-11-29': [
+        { text: 'Воскресный спринт: 15 звонков + сборка первого бота по шаблону VIBE', done: false },
+        { text: 'Зафиксировать первые поступления в трекере долга 50 000 ₽', done: false }
+      ],
+      '2026-11-30': [
+        { text: 'Сделать 15 звонков по базе (идем к 65/200)', done: false },
+        { text: 'Сдать первого бота заказчику и получить вторые 50% оплаты', done: false }
+      ],
+      '2026-12-01': [
+        { text: 'Выходной от вуза: 20 звонков по 2ГИС + дожим всех чатов за неделю', done: false },
+        { text: 'Обновить скрипт под предновогодний поток клиентов', done: false }
+      ],
+      '2026-12-02': [
+        { text: 'После пары сделать 15 звонков и отправить демо в TG/WA', done: false },
+        { text: 'Проверить статус всех открытых заявок и назначить созвоны', done: false }
+      ],
+      '2026-12-03': [
+        { text: 'После вуза (с 17:30) сделать 15 звонков (идем к ~95/200)', done: false },
+        { text: 'Дожать всех «молчунов» 24-часовым шаблоном', done: false }
+      ],
+      '2026-12-04': [
+        { text: 'После пар (с 13:30) сделать 15 звонков — пересечь отметку 105/200', done: false },
+        { text: 'Собрать предоплаты 50% по новым заказам на ботов/сайты', done: false }
+      ],
+      '2026-12-05': [
+        { text: 'После пар (с 13:30) сделать 12–15 звонков', done: false },
+        { text: 'Развернуть ботов/сайты для оплаченных клиентов', done: false }
+      ],
+      '2026-12-06': [
+        { text: 'Сделать 12 звонков + сдать текущие заказы', done: false },
+        { text: 'Подвести итог недели 2 и закрыть 15 000–20 000 ₽ долга', done: false }
+      ],
+      '2026-12-07': [
+        { text: 'Сделать 15 звонков с предновогодним оффером «разгрузим запись к НГ»', done: false },
+        { text: 'Подготовить демо-пример парсера баз/цен в Excel и Telegram', done: false }
+      ],
+      '2026-12-08': [
+        { text: 'Выходной от вуза: 20 звонков по базе + отклики на задачи по парсингу Python', done: false },
+        { text: 'Дожать всех кто просил перезвонить на этой неделе', done: false }
+      ],
+      '2026-12-09': [
+        { text: 'После пары сделать 15 звонков (идем к 135/200)', done: false },
+        { text: 'Отправить коммерческое предложение по парсеру (6 000–12 000 ₽)', done: false }
+      ],
+      '2026-12-10': [
+        { text: 'После вуза (с 17:30) сделать 15 звонков + демо в TG/WA', done: false },
+        { text: 'Написать парсер или доработать ботов по текущим заказам', done: false }
+      ],
+      '2026-12-11': [
+        { text: 'После пар (с 13:30) сделать 15 звонков', done: false },
+        { text: 'Сделать дожим по всем отправленным прайсам за 48 часов', done: false }
+      ],
+      '2026-12-12': [
+        { text: 'После пар (с 13:30) сделать 15 звонков — дойти до ~155/200', done: false },
+        { text: 'Предложить действующим клиентам поддержку/рассылку на праздники', done: false }
+      ],
+      '2026-12-13': [
+        { text: 'Сделать 10–15 звонков + закрыть задачи по парсерам и ботам', done: false },
+        { text: 'Сверить кассу и внести платеж в счёт закрытия долга 50 000 ₽', done: false }
+      ],
+      '2026-12-14': [
+        { text: 'Сделать 15 звонков из остатка базы (идем к 170/200)', done: false },
+        { text: 'Сдать готовые проекты и запросить постоплату 50%', done: false }
+      ],
+      '2026-12-15': [
+        { text: 'Выходной от вуза: 20 звонков по последним контактам базы', done: false },
+        { text: 'Собрать предоплаты за быстрые предновогодние сборки (3–4 дня)', done: false }
+      ],
+      '2026-12-16': [
+        { text: 'После пары сделать 15 звонков — финиш базы 200/200', done: false },
+        { text: 'Проверить все чаты и никого не оставить без ответа', done: false }
+      ],
+      '2026-12-17': [
+        { text: 'После вуза (с 17:30) сделать второй круг звонков по отложенным лидам', done: false },
+        { text: 'Разработка и сборка ботов/лендингов', done: false }
+      ],
+      '2026-12-18': [
+        { text: 'После пар (с 13:30) дожать всех лидов на предоплату до сессии/праздников', done: false },
+        { text: 'Проверить работу всех запущенных ботов клиентов', done: false }
+      ],
+      '2026-12-19': [
+        { text: 'После пар (с 13:30) закрыть хвосты по коммуникациям и демо', done: false },
+        { text: 'Сдать ботов/парсеры и получить оплату', done: false }
+      ],
+      '2026-12-20': [
+        { text: 'Финальный дожим лидов + сборка заказов', done: false },
+        { text: 'Сверить остаток долга перед финальной неделей года', done: false }
+      ],
+      '2026-12-21': [
+        { text: 'Доделать сборки заказов и отправить клиентам на проверку', done: false },
+        { text: 'Настроить клиентам рассылки/напоминания на новогодние дни', done: false }
+      ],
+      '2026-12-22': [
+        { text: 'Выходной от вуза: сдача готовых проектов + дожим открытых счетов', done: false },
+        { text: 'Подготовить акты/чеки самозанятого для закрытия расчётов', done: false }
+      ],
+      '2026-12-23': [
+        { text: 'После пары закрыть правки по проектам и получить постоплаты', done: false },
+        { text: 'Перевести клиентов на техподдержку', done: false }
+      ],
+      '2026-12-24': [
+        { text: 'После вуза (с 17:30) собрать оставшиеся оплаты по выполненным заказам', done: false },
+        { text: 'Проверить логи и стабильность всех ботов/парсеров', done: false }
+      ],
+      '2026-12-25': [
+        { text: 'После пар дожать все незакрытые оплаты с клиентов', done: false },
+        { text: 'Внести поступления в трекер долга 50 000 ₽', done: false }
+      ],
+      '2026-12-26': [
+        { text: 'После пар свести доходы с IT-заказов и колл-центра', done: false },
+        { text: 'Сделать крупный платёж по долгу', done: false }
+      ],
+      '2026-12-27': [
+        { text: 'Закрыть остатки по проектам и напомнить клиентам о постоплатах', done: false },
+        { text: 'Проверить, сколько осталось до 50 000 ₽', done: false }
+      ],
+      '2026-12-28': [
+        { text: 'Собрать последние постоплаты за год', done: false },
+        { text: 'Перевести средства на погашение долга', done: false }
+      ],
+      '2026-12-29': [
+        { text: 'Свести весь доход за декабрь (IT + колл-центр + стипендия)', done: false },
+        { text: 'Полностью закрыть долг 50 000 ₽', done: false }
+      ],
+      '2026-12-30': [
+        { text: 'Проверить, что все долги закрыты и клиенты довольны', done: false },
+        { text: 'Сделать бэкап всех проектов, баз и репозиториев', done: false }
+      ],
+      '2026-12-31': [
+        { text: 'Выгрузить финальный JSON прогресса и зафиксировать итоги года', done: false },
+        { text: 'Поставить цель на январь 2027 и отдохнуть перед новым годом', done: false }
+      ]
+    };
+
+    const days = [];
+    const cursor = new Date(2026, 10, 25); // 25 ноября 2026
+    const end = new Date(2026, 11, 31);   // 31 декабря 2026
+
+    while (cursor <= end) {
+      const dateKey = getLocalDateKey(cursor);
+      const dow = cursor.getDay();
+      const dayShort = weekdayNames[dow];
+      const dayNum = cursor.getDate();
+      const monthShort = monthNames[cursor.getMonth()];
+
+      let scheduleHint = 'Вечернее окно (1,5–2 ч) после колл-центра / дел';
+      if (dow === 1) scheduleHint = 'Пн: пары 10:00–12:00 • основное окно после 12:00 и вечером';
+      else if (dow === 2) scheduleHint = 'Вт: выходной от вуза — максимум времени на звонки, демо и сборку';
+      else if (dow === 3) scheduleHint = 'Ср: пара 10:00–11:00 • свободный день с 11:00';
+      else if (dow === 4) scheduleHint = 'Чт: пары 14:00–17:30 • звонки и задачи с 17:30';
+      else if (dow === 5) scheduleHint = 'Пт: пары 08:00–13:30 • окно на звонки и сделки с 13:30';
+      else if (dow === 6) scheduleHint = 'Сб: пары 08:00–13:30 • окно на звонки и разработку с 13:30';
+      else if (dow === 0) scheduleHint = 'Вс: выходной от пар — сборка ботов/парсеров и сверка финансов';
+
+      const baseItems = customDailyTasks[dateKey] || [
+        { text: 'Сделать 15 холодных звонков по базе и отправить демо в TG/WA', done: false },
+        { text: 'Сделать дожим лидов и продвинуть текущий заказ', done: false }
+      ];
+
+      days.push({
+        id: 'day_' + dateKey,
+        dateKey: dateKey,
+        title: `${dayShort}, ${dayNum} ${monthShort}`,
+        dates: `${String(dayNum).padStart(2, '0')}.${String(cursor.getMonth() + 1).padStart(2, '0')}`,
+        scheduleHint: scheduleHint,
+        items: baseItems.map((it, i) => ({
+          id: `${dateKey}_${i + 1}`,
+          day: '',
+          text: it.text,
+          done: Boolean(it.done)
+        }))
+      });
+
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    return days;
   }
 
   function formatShortDateFromKey(dateKey) {
@@ -1686,7 +1840,6 @@ grant all on table public.tracker_state to anon, authenticated;</div>
 
     let changed = false;
 
-    // 1. Невыполненные задачи прошлых дней висят в списке и принудительно помечаются как "Срочно"
     state.tasks.forEach(t => {
       if (!t.createdDate) t.createdDate = state.lastActiveDate;
       if (!t.done && t.createdDate < todayKey) {
@@ -1699,7 +1852,6 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     });
 
     if (state.lastActiveDate !== todayKey) {
-      // 2. Вчерашние выполненные задачи переносим в постоянный архив БД и убираем из активного списка дня
       state.tasks.forEach(t => {
         if (t.done) recordCompletedTaskToHistory(t);
       });
@@ -1744,23 +1896,15 @@ grant all on table public.tracker_state to anon, authenticated;</div>
   }
 
   function pullTodayPlanTasks() {
-    const dayMap = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
-    const todayShort = dayMap[new Date().getDay()];
     const todayKey = getLocalDateKey();
     const existingTexts = new Set(state.tasks.map(t => t.text.trim().toLowerCase()));
     let added = 0;
 
     state.roadmap.forEach(stage => {
+      if (stage.dateKey !== todayKey) return;
       stage.items.forEach(item => {
         if (item.done) return;
-        const dayLabel = item.day || '';
-        const matchesDay = dayLabel.includes(todayShort) ||
-          (todayShort === 'Чт' && dayLabel.includes('Чт–Пт')) ||
-          (todayShort === 'Пт' && (dayLabel.includes('Чт–Пт') || dayLabel.includes('Пт–Сб') || dayLabel.includes('Пт–Вс'))) ||
-          (todayShort === 'Сб' && (dayLabel.includes('Пт–Сб') || dayLabel.includes('Сб–Вс') || dayLabel.includes('Пт–Вс'))) ||
-          (todayShort === 'Вс' && (dayLabel.includes('Сб–Вс') || dayLabel.includes('Пт–Вс')));
-
-        if (matchesDay && !existingTexts.has(item.text.trim().toLowerCase())) {
+        if (!existingTexts.has(item.text.trim().toLowerCase())) {
           state.tasks.unshift({
             id: 'plan_' + item.id + '_' + Date.now(),
             text: item.text,
@@ -1778,10 +1922,62 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     if (added > 0) {
       saveState();
       renderTasks();
-      showToast(`Добавлено задач из плана на ${todayShort}: ${added}`);
+      showToast(`Добавлено задач из плана на сегодня: ${added}`);
     } else {
-      showToast(`Все задачи на ${todayShort} уже в списке`);
+      showToast('Все задачи на сегодня уже в списке');
     }
+  }
+
+  function isDailyRoadmap(roadmapArr) {
+    return Array.isArray(roadmapArr) && roadmapArr.length >= 20 && roadmapArr[0] && roadmapArr[0].dateKey;
+  }
+
+  function mergeWithDailyRoadmap(existingRoadmap) {
+    const freshDaily = getDefaultRoadmap();
+    if (!Array.isArray(existingRoadmap) || existingRoadmap.length === 0) return freshDaily;
+
+    const doneByDateAndText = new Map();
+    const extraItemsByDate = new Map();
+
+    existingRoadmap.forEach(st => {
+      const key = st.dateKey || '';
+      if (!Array.isArray(st.items)) return;
+      st.items.forEach(it => {
+        const normText = String(it.text || '').trim().toLowerCase();
+        if (it.done && key && normText) {
+          doneByDateAndText.set(`${key}::${normText}`, true);
+        }
+      });
+    });
+
+    return freshDaily.map(dayStage => {
+      const matchedOld = existingRoadmap.find(o => o.dateKey === dayStage.dateKey);
+      const mergedItems = dayStage.items.map(it => {
+        const normText = it.text.trim().toLowerCase();
+        const isDone = Boolean(it.done) || Boolean(doneByDateAndText.get(`${dayStage.dateKey}::${normText}`));
+        return { ...it, done: isDone };
+      });
+
+      if (matchedOld && Array.isArray(matchedOld.items)) {
+        const freshTexts = new Set(mergedItems.map(m => m.text.trim().toLowerCase()));
+        matchedOld.items.forEach(oldIt => {
+          const oldText = String(oldIt.text || '').trim();
+          if (oldText && !freshTexts.has(oldText.toLowerCase())) {
+            mergedItems.push({
+              id: oldIt.id || `${dayStage.dateKey}_custom_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+              day: oldIt.day || '',
+              text: oldText,
+              done: Boolean(oldIt.done)
+            });
+          }
+        });
+      }
+
+      return {
+        ...dayStage,
+        items: mergedItems
+      };
+    });
   }
 
   let state = loadState();
@@ -1930,7 +2126,7 @@ grant all on table public.tracker_state to anon, authenticated;</div>
             ...base,
             ...remoteData,
             funnel: { ...base.funnel, ...(remoteData.funnel || {}) },
-            roadmap: Array.isArray(remoteData.roadmap) && remoteData.roadmap.length ? remoteData.roadmap : base.roadmap,
+            roadmap: mergeWithDailyRoadmap(remoteData.roadmap),
             tasks: Array.isArray(remoteData.tasks) ? remoteData.tasks : base.tasks,
             completedHistory: Array.isArray(remoteData.completedHistory) ? remoteData.completedHistory : [],
             deals: Array.isArray(remoteData.deals) ? remoteData.deals : []
@@ -2048,7 +2244,7 @@ grant all on table public.tracker_state to anon, authenticated;</div>
         ...base,
         ...parsed,
         funnel: { ...base.funnel, ...(parsed.funnel || {}) },
-        roadmap: Array.isArray(parsed.roadmap) && parsed.roadmap.length ? parsed.roadmap : base.roadmap,
+        roadmap: mergeWithDailyRoadmap(parsed.roadmap),
         tasks: Array.isArray(parsed.tasks) ? parsed.tasks : base.tasks,
         completedHistory: Array.isArray(parsed.completedHistory) ? parsed.completedHistory : [],
         deals: Array.isArray(parsed.deals) ? parsed.deals : []
@@ -2392,7 +2588,14 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     }
   }
 
-  // ==================== КАЛЕНДАРНЫЙ ПЛАН ДО 31 ДЕКАБРЯ ====================
+  // ==================== ЕЖЕДНЕВНЫЙ ПЛАН ДО 31 ДЕКАБРЯ ====================
+  function setDayPlanFilter(filterMode, btnEl) {
+    dayPlanFilter = filterMode;
+    document.querySelectorAll('#dayPlanFilterBar .tag-chip').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    renderRoadmap();
+  }
+
   function toggleCheckpoint(stageId, itemId) {
     const stage = state.roadmap.find(s => s.id === stageId);
     if (!stage) return;
@@ -2402,7 +2605,7 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     if (item.done) {
       recordCompletedTaskToHistory({
         id: 'roadmap_' + item.id,
-        text: `[План] ${item.text}`,
+        text: `[${stage.title}] ${item.text}`,
         tag: 'База'
       });
     } else if (Array.isArray(state.completedHistory)) {
@@ -2424,14 +2627,14 @@ grant all on table public.tracker_state to anon, authenticated;</div>
     if (!stage) return;
     stage.items.push({
       id: `${stageId}_${Date.now()}`,
-      day: 'Доп.',
+      day: '',
       text: text,
       done: false
     });
     input.value = '';
     saveState();
     renderRoadmap();
-    showToast('Шаг добавлен в план');
+    showToast('Задача добавлена в день');
   }
 
   function deleteStageItem(stageId, itemId) {
@@ -2444,6 +2647,7 @@ grant all on table public.tracker_state to anon, authenticated;</div>
 
   function renderRoadmap() {
     const container = document.getElementById('roadmapContainer');
+    const todayKey = getLocalDateKey();
     let totalItems = 0;
     let doneItems = 0;
 
@@ -2454,34 +2658,52 @@ grant all on table public.tracker_state to anon, authenticated;</div>
 
     document.getElementById('roadmapProgressBadge').textContent = `${doneItems} / ${totalItems}`;
 
-    container.innerHTML = state.roadmap.map((stage, idx) => `
-      <div class="stage-card ${idx === 0 ? 'current-week' : ''}">
-        <div class="stage-header">
-          <div class="stage-name">${escapeHtml(stage.title)}</div>
-          <div class="stage-date">${escapeHtml(stage.dates)}</div>
-        </div>
-        ${stage.scheduleHint ? `<div class="stage-schedule-hint">${escapeHtml(stage.scheduleHint)}</div>` : ''}
-        <div>
-          ${stage.items.map(item => `
-            <div class="checkpoint-row ${item.done ? 'done' : ''}">
-              <button type="button" class="checkbox-btn" onclick="toggleCheckpoint('${stage.id}', '${item.id}')" aria-label="Выполнить">
-                ${item.done ? '✓' : ''}
-              </button>
-              <div class="checkpoint-text-wrap" onclick="toggleCheckpoint('${stage.id}', '${item.id}')">
-                ${item.day ? `<span class="checkpoint-day-pill">${escapeHtml(item.day)}</span>` : ''}
-                <span class="checkpoint-label">${escapeHtml(item.text)}</span>
-              </div>
-              <button type="button" class="mini-icon-btn" onclick="openEditModal('roadmap', '${item.id}', '${stage.id}')" aria-label="Редактировать">✎</button>
-              <button type="button" class="mini-icon-btn" onclick="deleteStageItem('${stage.id}', '${item.id}')" aria-label="Удалить">✕</button>
+    let visibleDays = state.roadmap;
+    if (dayPlanFilter === 'today_only') {
+      visibleDays = state.roadmap.filter(d => d.dateKey === todayKey);
+      if (visibleDays.length === 0) visibleDays = [state.roadmap[0]].filter(Boolean);
+    } else if (dayPlanFilter === 'today_onward') {
+      visibleDays = state.roadmap.filter(d => !d.dateKey || d.dateKey >= todayKey);
+      if (visibleDays.length === 0) visibleDays = state.roadmap;
+    }
+
+    container.innerHTML = visibleDays.map((dayStage) => {
+      const isToday = dayStage.dateKey === todayKey;
+      const dayDone = dayStage.items.filter(i => i.done).length;
+      const dayTotal = dayStage.items.length;
+      const isDoneAll = dayTotal > 0 && dayDone === dayTotal;
+
+      return `
+        <div class="day-plan-card ${isToday ? 'is-today' : ''} ${isDoneAll ? 'is-done-all' : ''}">
+          <div class="day-plan-header">
+            <div class="day-plan-title">
+              <span>${escapeHtml(dayStage.title)}</span>
+              ${isToday ? `<span class="day-now-pill">Сегодня</span>` : ''}
             </div>
-          `).join('')}
+            <span class="badge-gold">${dayDone} / ${dayTotal}</span>
+          </div>
+          ${dayStage.scheduleHint ? `<div class="day-plan-meta">${escapeHtml(dayStage.scheduleHint)}</div>` : ''}
+          <div>
+            ${dayStage.items.map(item => `
+              <div class="checkpoint-row ${item.done ? 'done' : ''}">
+                <button type="button" class="checkbox-btn" onclick="toggleCheckpoint('${dayStage.id}', '${item.id}')" aria-label="Выполнить">
+                  ${item.done ? '✓' : ''}
+                </button>
+                <div class="checkpoint-text-wrap" onclick="toggleCheckpoint('${dayStage.id}', '${item.id}')">
+                  <span class="checkpoint-label">${escapeHtml(item.text)}</span>
+                </div>
+                <button type="button" class="mini-icon-btn" onclick="openEditModal('roadmap', '${item.id}', '${dayStage.id}')" aria-label="Редактировать">✎</button>
+                <button type="button" class="mini-icon-btn" onclick="deleteStageItem('${dayStage.id}', '${item.id}')" aria-label="Удалить">✕</button>
+              </div>
+            `).join('')}
+          </div>
+          <form class="stage-add-row" onsubmit="addStageItem(event, '${dayStage.id}')">
+            <input type="text" id="add_input_${dayStage.id}" class="stage-add-input" placeholder="Добавить задачу на этот день..." />
+            <button type="submit" class="btn btn-sm btn-gold-soft">+</button>
+          </form>
         </div>
-        <form class="stage-add-row" onsubmit="addStageItem(event, '${stage.id}')">
-          <input type="text" id="add_input_${stage.id}" class="stage-add-input" placeholder="Добавить задачу в эту неделю..." />
-          <button type="submit" class="btn btn-sm btn-gold-soft">+</button>
-        </form>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   // ==================== БЭКАП И СИНХРОНИЗАЦИЯ ====================
@@ -2553,7 +2775,6 @@ grant all on table public.tracker_state to anon, authenticated;</div>
       const incoming = JSON.parse(raw);
       const todayKey = getLocalDateKey();
 
-      // 1. Собираем карту уже выполненных пунктов по id и по тексту, чтобы не потерять прогресс
       const doneRoadmapIds = new Set();
       const doneRoadmapTexts = new Set();
       state.roadmap.forEach(stage => {
@@ -2574,30 +2795,33 @@ grant all on table public.tracker_state to anon, authenticated;</div>
         }
       });
 
-      // 2. Обновляем дорожную карту (этапы до 31 дек), сохраняя отметки выполнения
       if (Array.isArray(incoming.roadmap) && incoming.roadmap.length > 0) {
-        state.roadmap = incoming.roadmap.map((stage, sIdx) => ({
-          id: stage.id || `w_imp_${sIdx + 1}`,
-          title: stage.title || `Этап ${sIdx + 1}`,
-          dates: stage.dates || '',
-          scheduleHint: stage.scheduleHint || '',
-          items: Array.isArray(stage.items) ? stage.items.map((item, iIdx) => {
-            const itemId = item.id || `imp_${sIdx}_${iIdx}`;
-            const itemText = String(item.text || '').trim();
-            const wasDone = Boolean(item.done) ||
-              doneRoadmapIds.has(itemId) ||
-              doneRoadmapTexts.has(itemText.toLowerCase());
-            return {
-              id: itemId,
-              day: item.day || '',
-              text: itemText,
-              done: wasDone
-            };
-          }) : []
-        }));
+        if (isDailyRoadmap(incoming.roadmap)) {
+          state.roadmap = incoming.roadmap.map((stage, sIdx) => ({
+            id: stage.id || `day_${stage.dateKey || sIdx + 1}`,
+            dateKey: stage.dateKey || '',
+            title: stage.title || `День ${sIdx + 1}`,
+            dates: stage.dates || '',
+            scheduleHint: stage.scheduleHint || '',
+            items: Array.isArray(stage.items) ? stage.items.map((item, iIdx) => {
+              const itemId = item.id || `d_imp_${sIdx}_${iIdx}`;
+              const itemText = String(item.text || '').trim();
+              const wasDone = Boolean(item.done) ||
+                doneRoadmapIds.has(itemId) ||
+                doneRoadmapTexts.has(itemText.toLowerCase());
+              return {
+                id: itemId,
+                day: item.day || '',
+                text: itemText,
+                done: wasDone
+              };
+            }) : []
+          }));
+        } else {
+          state.roadmap = mergeWithDailyRoadmap(state.roadmap);
+        }
       }
 
-      // 3. Обновляем оперативные задачи, сохраняя выполненные
       if (Array.isArray(incoming.tasks)) {
         const preservedDoneTasks = state.tasks.filter(t => t.done);
         const incomingTasks = incoming.tasks.map((t, idx) => {
